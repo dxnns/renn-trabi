@@ -156,6 +156,29 @@
     });
   }
 
+  // ---- Sponsor logos: show image only if file exists ----
+  const sponsorLogoEls = $$("[data-sponsor-logo]");
+  sponsorLogoEls.forEach((img) => {
+    const logoBox = img.closest(".logo-box");
+    if (!logoBox) return;
+
+    const setLoaded = () => {
+      logoBox.classList.add("has-logo");
+    };
+    const setMissing = () => {
+      logoBox.classList.remove("has-logo");
+    };
+
+    if (img.complete) {
+      if (img.naturalWidth > 0) setLoaded();
+      else setMissing();
+      return;
+    }
+
+    img.addEventListener("load", setLoaded, { once: true });
+    img.addEventListener("error", setMissing, { once: true });
+  });
+
   // ---- Countdown ----
   const cd = document.querySelector("[data-countdown]");
   if (cd) {
