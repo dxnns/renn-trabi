@@ -12,6 +12,39 @@
   // ---- Helpers ----
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+
+  // ---- Instagram links (prefer app on mobile, fallback to web) ----
+  const instagramLinks = $$("[data-instagram-link]");
+  if (instagramLinks.length) {
+    const instaWebUrl = "https://www.instagram.com/bembelracingteam/";
+    const instaAppUrl = "instagram://user?username=bembelracingteam";
+
+    instagramLinks.forEach((linkEl) => {
+      if (!(linkEl instanceof HTMLAnchorElement)) return;
+      linkEl.href = instaWebUrl;
+      linkEl.rel = "noopener noreferrer";
+
+      if (!isMobileDevice) {
+        linkEl.target = "_blank";
+        return;
+      }
+
+      linkEl.addEventListener("click", (e) => {
+        e.preventDefault();
+        const fallbackUrl = linkEl.href;
+        const startedAt = Date.now();
+
+        window.location.href = instaAppUrl;
+
+        window.setTimeout(() => {
+          if (document.visibilityState === "visible" && Date.now() - startedAt < 1600) {
+            window.location.href = fallbackUrl;
+          }
+        }, 900);
+      });
+    });
+  }
 
   // ---- Mobile nav ----
   const toggle = $(".nav-toggle");
