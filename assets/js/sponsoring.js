@@ -202,7 +202,7 @@
       const message = $("#sponsorMsg")?.value?.trim() || "";
       const interests = $$("input[name='interest']:checked", sponsorForm).map(i => i.value);
 
-      const to = "team@bembel-racing.example";
+      const to = "sponsoring@bembelracingteam.de";
       const subject = encodeURIComponent(
         `[Sponsoring] ${company || "Anfrage"} – ${state.selectedPlan} (${formatEUR(state.amount)} EUR)`
       );

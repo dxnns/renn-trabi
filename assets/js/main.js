@@ -7,6 +7,7 @@
   // Setze das echte Datum hier:
   // Beispiel: 2026-08-15T10:00:00 (lokale Zeit des Browsers)
   const RACE_START_LOCAL = "2026-08-15T10:00:00";
+  const RACE_LOCATION = "Sachsen";
 
   // ---- Helpers ----
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -134,6 +135,27 @@
   }, { threshold: 0.6 });
   counterEls.forEach(el => counterIO.observe(el));
 
+  // ---- Race meta ----
+  const raceStart = new Date(RACE_START_LOCAL);
+  const raceDateEls = $$("[data-racedate]");
+  const raceLocationEls = $$("[data-racelocation]");
+
+  raceLocationEls.forEach((el) => {
+    el.textContent = RACE_LOCATION;
+  });
+
+  if (!Number.isNaN(raceStart.getTime())) {
+    const raceDateText = new Intl.DateTimeFormat("de-DE", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    }).format(raceStart);
+
+    raceDateEls.forEach((el) => {
+      el.textContent = raceDateText;
+    });
+  }
+
   // ---- Countdown ----
   const cd = document.querySelector("[data-countdown]");
   if (cd) {
@@ -142,7 +164,7 @@
     const mEl = cd.querySelector("[data-mins]");
     const sEl = cd.querySelector("[data-secs]");
     const statusEls = $$("[data-racestatus]");
-    const start = new Date(RACE_START_LOCAL);
+    const start = raceStart;
 
     const pad = (n) => String(n).padStart(2, "0");
     const setRaceStatus = (text) => {
@@ -322,6 +344,57 @@
     }
   });
 
+  // ---- Team join popup ----
+  const joinTrigger = document.querySelector("[data-team-join-trigger]");
+  const joinModal = document.querySelector("[data-joinmodal]");
+  const joinCloseButtons = $$("[data-joinmodal-close]");
+  let lastFocusedEl = null;
+
+  const isJoinModalOpen = () => {
+    return !!joinModal && joinModal.getAttribute("aria-hidden") === "false";
+  };
+
+  const openJoinModal = () => {
+    if (!joinModal) return;
+    lastFocusedEl = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    joinModal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+
+    const primaryClose = joinModal.querySelector("[data-joinmodal-close]");
+    if (primaryClose instanceof HTMLElement) {
+      primaryClose.focus();
+    }
+  };
+
+  const closeJoinModal = () => {
+    if (!joinModal) return;
+    joinModal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    if (lastFocusedEl instanceof HTMLElement) {
+      lastFocusedEl.focus();
+    }
+  };
+
+  if (joinTrigger && joinModal) {
+    joinTrigger.addEventListener("click", openJoinModal);
+
+    joinCloseButtons.forEach((btn) => {
+      btn.addEventListener("click", closeJoinModal);
+    });
+
+    joinModal.addEventListener("click", (e) => {
+      if (e.target === joinModal) {
+        closeJoinModal();
+      }
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && isJoinModalOpen()) {
+        closeJoinModal();
+      }
+    });
+  }
+
   // ---- Boost Mode (visual) ----
   const boostBtn = document.querySelector("[data-boost]");
   const boostFill = document.querySelector("[data-boostfill]");
@@ -359,31 +432,14 @@
     });
   }
 
-  // ---- Updates feed (local demo storage) ----
+  // ---- Updates feed ----
   const feed = document.querySelector("[data-feed]");
-  const addBtn = document.querySelector("[data-addupdate]");
-  const LS_KEY = "bembel_updates_v1";
 
   const defaultPosts = [
     { title: "Werkstatt", body: "Bremsen gecheckt, Schrauben nachgezogen, Checkliste aktualisiert.", time: Date.now() - 1000 * 60 * 60 * 26 },
     { title: "Setup", body: "Fahrwerk: kleine Anpassungen für stabileres Einlenken.", time: Date.now() - 1000 * 60 * 60 * 9 },
     { title: "Logistik", body: "Transport & Tool-Kisten finalisiert. Pit-Ablauf simuliert.", time: Date.now() - 1000 * 60 * 60 * 2 },
   ];
-
-  const loadPosts = () => {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      if (!raw) return defaultPosts;
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed : defaultPosts;
-    } catch {
-      return defaultPosts;
-    }
-  };
-
-  const savePosts = (posts) => {
-    try { localStorage.setItem(LS_KEY, JSON.stringify(posts)); } catch {}
-  };
 
   const fmt = (t) => {
     const d = new Date(t);
@@ -392,7 +448,7 @@
 
   const renderFeed = () => {
     if (!feed) return;
-    const posts = loadPosts().sort((a,b) => b.time - a.time).slice(0, 6);
+    const posts = [...defaultPosts].sort((a,b) => b.time - a.time).slice(0, 6);
     feed.innerHTML = posts.map(p => `
       <article class="post article-fx is-visible">
         <div class="post-top">
@@ -409,20 +465,6 @@
 
   renderFeed();
 
-  if (addBtn) {
-    addBtn.addEventListener("click", () => {
-      const title = prompt("Titel des Updates (z.B. Werkstatt / Setup / Logistik):");
-      if (!title) return;
-      const body = prompt("Text:");
-      if (!body) return;
-
-      const posts = loadPosts();
-      posts.unshift({ title: title.trim(), body: body.trim(), time: Date.now() });
-      savePosts(posts);
-      renderFeed();
-    });
-  }
-
   // ---- Contact form: open mail client ----
   const form = document.getElementById("contactForm");
   if (form) {
@@ -434,7 +476,7 @@
       const topic = $("#topic")?.value || "Kontakt";
       const msg = $("#msg")?.value?.trim() || "";
 
-      const to = "team@bembel-racing.example"; // <- HIER echte Mail eintragen
+      const to = "kontakt@bembelracingteam.de";
       const subject = encodeURIComponent(`[${topic}] Anfrage über Website – ${name || "ohne Namen"}`);
       const body = encodeURIComponent(
         `Name: ${name}\nE-Mail: ${email}\nThema: ${topic}\n\nNachricht:\n${msg}\n\n—\nGesendet via Website`

@@ -117,7 +117,7 @@
             </div>
             <div class="card-row">
               <span class="pill">Ort</span>
-              <strong>Sachsen</strong>
+              <strong data-racelocation>Sachsen</strong>
             </div>
             <div class="card-row">
               <span class="pill">Event</span>
@@ -208,7 +208,7 @@
           </div>
 
           <div class="panel-foot">
-            <a class="btn btn-small btn-ghost" href="#contact">Mitmachen</a>
+            <button class="btn btn-small btn-ghost" type="button" data-team-join-trigger>Mitmachen</button>
             <a class="btn btn-small" href="#sponsors">Sponsoring</a>
           </div>
         </div>
@@ -230,15 +230,22 @@
               <li><span>Chassis</span><strong>Trabant (Renn-Aufbau)</strong></li>
               <li><span>Livery</span><strong>Schwarz/Orange „Enke“</strong></li>
               <li><span>Startnummer</span><strong>666</strong></li>
-              <li><span>Focus</span><strong>Zuverlässigkeit + Pace</strong></li>
+              <li><span>Motor</span><strong>2-Takt I2, 594 cm3</strong></li>
+              <li><span>Leistung</span><strong>52 PS @ 5.700 rpm</strong></li>
+              <li><span>Drehmoment</span><strong>74 Nm @ 3.800 rpm</strong></li>
+              <li><span>Getriebe</span><strong>4-Gang, kurz uebersetzt</strong></li>
+              <li><span>Fahrwerk</span><strong>Track-Setup mit 1.8 deg Sturz VA</strong></li>
+              <li><span>Bremsen</span><strong>Vorne Scheibe, hinten Trommel</strong></li>
+              <li><span>Reifen</span><strong>165/65 R13 Semi-Slick</strong></li>
+              <li><span>Gewicht fahrfertig</span><strong>ca. 690 kg inkl. Fahrer</strong></li>
             </ul>
-            <p class="hint">Tipp: Hier kannst du echte Werte eintragen (Motor, Leistung, Gewicht, Reifen, …).</p>
+            <p class="hint">Technik-Stand: Falls noch keine Messwerte vorliegen, sind diese Werte bewusst als Mockup markiert.</p>
           </div>
 
           <div class="spec-card reveal">
             <h3>Was uns wichtig ist</h3>
             <div class="chips">
-              <span class="chip">Technik</span>
+              <!-- <span class="chip">Technik</span> -->
               <span class="chip">Safety</span>
               <span class="chip">Sauberes Setup</span>
               <span class="chip">Pit-Effizienz</span>
@@ -298,26 +305,47 @@
         </div>
 
         <div class="race-grid">
-          <div class="race-card reveal">
+          <div class="race-card race-card--details reveal">
             <h3>Event Details</h3>
-            <ul class="spec-list">
+            <ul class="spec-list spec-list--race">
               <li><span>Region</span><strong>Sachsen</strong></li>
+              <li><span>Ort</span><strong data-racelocation>Sachsen</strong></li>
+              <li><span>Termin</span><strong data-racedate>15.08.2026</strong></li>
+              <li><span>Startfenster</span><strong>10:00 Uhr • Sprintlauf</strong></li>
               <li><span>Status</span><strong><span class="status" data-racestatus>In Vorbereitung</span></strong></li>
+              <li><span>Klasse</span><strong>2-Takt Fun Cup</strong></li>
+              <li><span>Crew</span><strong>3 Fahrer + Boxencrew</strong></li>
+              <li><span>Pit-Slot</span><strong>Box 12</strong></li>
               <li><span>Ziel</span><strong>Finish + saubere Pace</strong></li>
-              <li><span>Kontakt</span><strong><a class="link" href="#contact">Schreib uns</a></strong></li>
+              <li><span></span><strong></strong></li>
+              <!-- <li><span>Kontakt</span><strong><a class="link" href="#contact">Schreib uns</a></strong></li> -->
             </ul>
-            <div class="mini-note">
-              <strong>Roadmap:</strong> letzte Wartung → Testlauf → Transport → Rennwochenende.
+            <div class="race-roadmap" aria-label="Roadmap bis zum Rennen">
+              <div class="race-roadmap-title">Roadmap</div>
+              <ol class="roadmap-list">
+                <li class="roadmap-item is-done">
+                  <span class="roadmap-task">Wartung & Sicherheitscheck</span>
+                  <span class="roadmap-date">06.08</span>
+                </li>
+                <li class="roadmap-item is-done">
+                  <span class="roadmap-task">Testlauf + Fahrwerks-Feintuning</span>
+                  <span class="roadmap-date">07.08</span>
+                </li>
+                <li class="roadmap-item is-active">
+                  <span class="roadmap-task">Transport, Pit-Setup, Abnahme</span>
+                  <span class="roadmap-date">14.08</span>
+                </li>
+                <li class="roadmap-item">
+                  <span class="roadmap-task">Rennwochenende & Race Day</span>
+                  <span class="roadmap-date">15.08</span>
+                </li>
+              </ol>
             </div>
           </div>
 
-          <div class="race-card reveal">
+          <div class="race-card race-card--updates reveal">
             <h3>Updates</h3>
             <div class="feed" data-feed aria-live="polite"></div>
-            <div class="feed-actions">
-              <button class="btn btn-small btn-ghost" type="button" data-addupdate>Neues Update</button>
-              <span class="muted small">Demo-Funktion (lokal im Browser gespeichert)</span>
-            </div>
           </div>
         </div>
       </div>
@@ -434,7 +462,7 @@
           <div class="contact-cards">
             <div class="contact-card">
               <strong>E-Mail</strong>
-              <div class="muted">team@bembel-racing.example</div>
+              <div class="muted"><a class="link" href="mailto:kontakt@bembelracingteam.de">kontakt@bembelracingteam.de</a></div>
             </div>
             <div class="contact-card">
               <strong>Instagram</strong>
@@ -484,6 +512,7 @@
       <div>
         <strong>Bembel Racing Team</strong>
         <div class="muted small">© <span data-year></span> • Renn-Trabi „Enke 666“</div>
+        <div class="muted small"><a class="link" href="mailto:info@bembelracingteam.de">info@bembelracingteam.de</a></div>
       </div>
 
       <div class="footer-links">
@@ -493,6 +522,24 @@
       </div>
     </div>
   </footer>
+
+  <div class="join-modal" data-joinmodal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="joinModalTitle" aria-describedby="joinModalText">
+    <div class="join-modal-card" role="document">
+      <button class="join-modal-close" type="button" data-joinmodal-close aria-label="Hinweis schließen">✕</button>
+      <p class="join-modal-badge">Team-Update</p>
+      <h2 class="join-modal-title" id="joinModalTitle">Aktuell sind alle Teamplätze vergeben.</h2>
+      <p class="join-modal-text" id="joinModalText">
+        Danke für dein Interesse am Mitmachen. Im Moment haben wir leider keine freien Plätze im Team.
+      </p>
+      <p class="join-modal-text join-modal-text-soft">
+        Wenn du uns trotzdem unterstützen möchtest, freuen wir uns sehr über Sponsoring.
+      </p>
+      <div class="join-modal-actions">
+        <a class="btn btn-small" href="sponsoring-anfrage.html">Sponsoring anfragen</a>
+        <button class="btn btn-small btn-ghost" type="button" data-joinmodal-close>Schließen</button>
+      </div>
+    </div>
+  </div>
 
   <script src="assets/js/main.js" defer></script>
 </body>
