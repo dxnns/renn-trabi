@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sponsoring-Anfrage | Bembel Racing Team</title>
+  <meta name="description" content="Sponsoring-Anfrage für Bembel Racing Team: Paket wählen, Budget festlegen und direkt Kontakt aufnehmen." />
+  <meta name="theme-color" content="#0f1114" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/sponsoring.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="back-link" href="index.html#sponsors">Zurück zur Hauptseite</a>
+      <a class="btn btn-ghost btn-small" href="#requestForm">Direkt zur Anfrage</a>
+    </div>
+  </header>
+
+  <main class="container sponsor-main">
+    <section class="hero-panel">
+      <p class="kicker">Sponsoring 2026</p>
+      <h1>Mehr Sichtbarkeit für deine Marke. Mehr Rennpower für „Enke 666“.</h1>
+      <p class="intro">
+        Je früher du einsteigst, desto prominenter können wir deine Platzierung auf Fahrzeug, Website und Content planen.
+        Du legst selbst fest, wie groß dein Beitrag ist.
+      </p>
+
+      <div class="hero-metrics" aria-label="Sponsoring Kennzahlen">
+        <article class="metric-card">
+          <span class="metric-value">7/12</span>
+          <span class="metric-label">Partnerplätze reserviert</span>
+        </article>
+        <article class="metric-card">
+          <span class="metric-value">68%</span>
+          <span class="metric-label">Saisonbudget gesichert</span>
+        </article>
+        <article class="metric-card">
+          <span class="metric-value">2026</span>
+          <span class="metric-label">Sachsen Ziel-Saison</span>
+        </article>
+      </div>
+
+      <div class="funding-block" aria-label="Finanzierungsstand">
+        <div class="funding-head">
+          <span>Aktueller Finanzierungsstand</span>
+          <strong data-funding-value>68%</strong>
+        </div>
+        <div class="funding-bar">
+          <span data-funding-bar data-target="68"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace" aria-label="Sponsoring Konfiguration">
+      <div class="stack">
+        <article class="panel">
+          <h2>1. Paket auswählen</h2>
+          <p class="muted">Du kannst jederzeit frei kombinieren. Das Paket dient als Ausgangspunkt.</p>
+          <div class="plan-grid">
+            <button class="plan-card is-selected" type="button" data-plan="Bronze" data-visibility="Website + Update-Erwähnung" data-note="Solider Einstieg mit klarer Sichtbarkeit in der Community.">
+              <span class="plan-name">Bronze</span>
+              <span class="plan-range">ab 450 EUR</span>
+            </button>
+            <button class="plan-card" type="button" data-plan="Silber" data-visibility="Website + Fahrzeugbereich + Content" data-note="Ausgewogene Mischung aus Reichweite und Markenpräsenz.">
+              <span class="plan-name">Silber</span>
+              <span class="plan-range">ab 1.100 EUR</span>
+            </button>
+            <button class="plan-card" type="button" data-plan="Gold" data-visibility="Prominente Platzierung + Co-Branding" data-note="Maximale Sichtbarkeit und enge Zusammenarbeit.">
+              <span class="plan-name">Gold</span>
+              <span class="plan-range">ab 2.200 EUR</span>
+            </button>
+          </div>
+        </article>
+
+        <article class="panel">
+          <h2>2. Budget festlegen</h2>
+          <div class="amount-row">
+            <div class="amount-value"><span data-amount-value>1200</span> EUR</div>
+            <span class="impact-tag" data-impact-tag>Gute Strecken-Sichtbarkeit</span>
+          </div>
+          <input class="amount-range" type="range" min="300" max="5000" step="50" value="1200" data-amount-range aria-label="Budget in Euro" />
+          <div class="chip-row">
+            <button type="button" class="chip" data-amount-chip="600">600 EUR</button>
+            <button type="button" class="chip is-active" data-amount-chip="1200">1200 EUR</button>
+            <button type="button" class="chip" data-amount-chip="2500">2500 EUR</button>
+            <button type="button" class="chip" data-amount-chip="4000">4000 EUR</button>
+          </div>
+        </article>
+      </div>
+
+      <aside class="panel summary-panel" aria-live="polite">
+        <h2>3. Live-Vorschau</h2>
+        <ul class="summary-list">
+          <li><span>Gewähltes Paket</span><strong data-summary-plan>Bronze</strong></li>
+          <li><span>Empfehlung zum Budget</span><strong data-summary-recommended>Silber</strong></li>
+          <li><span>Budget</span><strong><span data-summary-amount>1200</span> EUR</strong></li>
+          <li><span>Sichtbarkeit</span><strong data-summary-visibility>Website + Update-Erwähnung</strong></li>
+          <li><span>Direkter Impact</span><strong data-summary-impact>ca. 8 Setup-Slots abgesichert</strong></li>
+        </ul>
+        <p class="summary-note" data-summary-note>Ausgewogene Mischung aus Reichweite und Markenpräsenz.</p>
+      </aside>
+    </section>
+
+    <section class="panel request-panel" id="requestForm">
+      <h2>Sponsoring-Anfrage senden</h2>
+      <p class="muted">
+        Hinterlasse deine Daten und wir melden uns mit einer passenden Option.
+        Die Anfrage wird per E-Mail vorbereitet.
+      </p>
+
+      <form class="request-form" id="sponsorForm" autocomplete="on">
+        <input type="hidden" id="selectedPlan" name="selectedPlan" value="Bronze" />
+        <input type="hidden" id="selectedAmount" name="selectedAmount" value="1200" />
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="sponsorName">Name</label>
+            <input id="sponsorName" name="name" type="text" placeholder="Max Mustermann" required />
+          </div>
+          <div class="field">
+            <label for="sponsorCompany">Unternehmen</label>
+            <input id="sponsorCompany" name="company" type="text" placeholder="Firma GmbH" required />
+          </div>
+          <div class="field">
+            <label for="sponsorMail">E-Mail</label>
+            <input id="sponsorMail" name="email" type="email" placeholder="kontakt@firma.de" required />
+          </div>
+          <div class="field">
+            <label for="sponsorPhone">Telefon (optional)</label>
+            <input id="sponsorPhone" name="phone" type="tel" placeholder="+49 ..." />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="startWindow">Gewünschter Startzeitraum</label>
+          <select id="startWindow" name="startWindow">
+            <option value="Sofort">Sofort</option>
+            <option value="Nächster Monat">Nächster Monat</option>
+            <option value="In 2-3 Monaten">In 2-3 Monaten</option>
+            <option value="Nach Absprache">Nach Absprache</option>
+          </select>
+        </div>
+
+        <fieldset class="field fieldset">
+          <legend>Interessen für Sichtbarkeit</legend>
+          <label class="check"><input type="checkbox" name="interest" value="Fahrzeugbranding" checked />Fahrzeugbranding</label>
+          <label class="check"><input type="checkbox" name="interest" value="Website/Content" checked />Website & Content</label>
+          <label class="check"><input type="checkbox" name="interest" value="Event-Präsenz" />Event-Präsenz / Trackside</label>
+          <label class="check"><input type="checkbox" name="interest" value="Individuelle Aktion" />Individuelle Aktion</label>
+        </fieldset>
+
+        <div class="field">
+          <label for="sponsorMsg">Kurze Nachricht</label>
+          <textarea id="sponsorMsg" name="message" rows="5" placeholder="Was ist dir wichtig? Zielgruppe, Platzierung, Budgetrahmen ..."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn" type="submit">Anfrage vorbereiten</button>
+          <span class="muted small">Antwort i.d.R. innerhalb von 48h.</span>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script src="assets/js/sponsoring.js" defer></script>
+</body>
+</html>
