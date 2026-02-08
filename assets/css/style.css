@@ -27,11 +27,13 @@ body{
   margin:0;
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background: radial-gradient(1240px 700px at 14% -6%, rgba(255,106,0,.30), transparent 62%),
-              radial-gradient(980px 560px at 88% 14%, rgba(255,138,43,.20), transparent 64%),
+              radial-gradient(980px 620px at 88% -12%, rgba(255,255,255,.11), transparent 70%),
+              radial-gradient(980px 560px at 88% 14%, rgba(255,138,43,.14), transparent 64%),
+              radial-gradient(820px 520px at 20% 70%, rgba(255,244,228,.06), transparent 72%),
               radial-gradient(760px 460px at 50% 88%, rgba(255,106,0,.14), transparent 72%),
               linear-gradient(180deg, var(--bg), var(--bg2));
-  background-size: 122% 122%, 116% 116%, 110% 110%, 100% 100%;
-  background-position: 12% -10%, 88% 14%, 50% 92%, center top;
+  background-size: 122% 122%, 114% 114%, 116% 116%, 108% 108%, 110% 110%, 100% 100%;
+  background-position: 12% -10%, 88% -12%, 88% 14%, 20% 70%, 50% 92%, center top;
   animation: ambient-bg-shift 24s ease-in-out infinite alternate;
   color: var(--text);
   line-height:1.55;
@@ -39,16 +41,16 @@ body{
 
 @keyframes ambient-bg-shift{
   0%{
-    background-position: 12% -10%, 88% 14%, 50% 92%, center top;
-    background-size: 122% 122%, 116% 116%, 110% 110%, 100% 100%;
+    background-position: 12% -10%, 88% -12%, 88% 14%, 20% 70%, 50% 92%, center top;
+    background-size: 122% 122%, 114% 114%, 116% 116%, 108% 108%, 110% 110%, 100% 100%;
   }
   50%{
-    background-position: 26% -2%, 72% 30%, 46% 80%, center top;
-    background-size: 132% 128%, 122% 120%, 118% 116%, 100% 100%;
+    background-position: 26% -2%, 78% -4%, 72% 30%, 26% 60%, 46% 80%, center top;
+    background-size: 132% 128%, 120% 118%, 122% 120%, 114% 112%, 118% 116%, 100% 100%;
   }
   100%{
-    background-position: 6% 10%, 94% 8%, 56% 98%, center top;
-    background-size: 116% 118%, 112% 112%, 106% 108%, 100% 100%;
+    background-position: 6% 10%, 92% -16%, 94% 8%, 14% 78%, 56% 98%, center top;
+    background-size: 116% 118%, 110% 110%, 112% 112%, 104% 106%, 106% 108%, 100% 100%;
   }
 }
 
@@ -212,18 +214,17 @@ button, input, select, textarea{ font: inherit; }
 .hero-bg{
   position:absolute; inset:0;
   background:
-    linear-gradient(90deg, rgba(15,17,20,.92) 0%, rgba(15,17,20,.55) 45%, rgba(15,17,20,.80) 100%),
+    radial-gradient(980px 460px at 18% 8%, rgba(255,255,255,.10), transparent 70%),
+    radial-gradient(780px 360px at 86% 10%, rgba(255,255,255,.08), transparent 72%),
+    radial-gradient(920px 360px at 52% 82%, rgba(255,255,255,.05), transparent 76%),
+    linear-gradient(90deg, rgba(15,17,20,.88) 0%, rgba(15,17,20,.48) 45%, rgba(15,17,20,.72) 100%),
     url("../img/trabi.jpg") center/cover no-repeat;
   filter: saturate(1.05) contrast(1.05);
   transform: scale(1.02);
   z-index:0;
 }
 .hero-fade{
-  position:absolute; left:0; right:0; bottom:0;
-  height:120px;
-  background: linear-gradient(180deg, transparent, var(--bg2));
-  z-index:1;
-  pointer-events:none;
+  display:none;
 }
 
 .hero-inner{
