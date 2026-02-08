@@ -7,6 +7,8 @@
   <title>Bembel Racing Team – Renn-Trabi „Enke 666“</title>
   <meta name="description" content="Kleines Rennteam, großer Spaß: Unser Renn-Trabi „Enke 666“ startet dieses Jahr beim Trabi-Rennen in Sachsen. News, Team, Fahrzeugdaten, Sponsoren & Kontakt." />
   <meta name="theme-color" content="#0f1114" />
+  <meta name="api-base" content="" />
+  <meta name="mail-fallback-enabled" content="false" />
 
   <!-- Open Graph (optional og-cover.jpg hinzufügen) -->
   <meta property="og:title" content="Bembel Racing Team – Renn-Trabi „Enke 666“" />
@@ -129,6 +131,17 @@
             <div class="card-actions">
               <a class="btn btn-small" href="#contact">Mitfahren / Kontakt</a>
               <a class="link" href="#about">Mehr über uns →</a>
+            </div>
+
+            <div class="card-summary" data-race-summary aria-live="polite">
+              <div class="card-row">
+                <span class="pill">Letztes Update</span>
+                <strong data-race-lastupdate>Wird geladen ...</strong>
+              </div>
+              <div class="card-row">
+                <span class="pill">Nächster Meilenstein</span>
+                <strong data-race-nextmilestone>Transport, Pit-Setup und Abnahme</strong>
+              </div>
             </div>
           </div>
 
@@ -346,8 +359,32 @@
           </div>
 
           <div class="race-card race-card--updates reveal">
-            <h3>Updates</h3>
+            <div class="race-center-head">
+              <h3>Race Center</h3>
+              <button class="btn btn-small btn-ghost" type="button" data-race-refresh>Neu laden</button>
+            </div>
+
+            <div class="race-center-follow">
+              <button class="btn btn-small btn-ghost" type="button" data-race-follow-toggle aria-pressed="false">
+                Follow Mode: Aus
+              </button>
+              <p class="small muted" data-race-follow-hint>Follow Mode aus. Aktivieren für automatische Live-Updates.</p>
+            </div>
+
+            <div class="race-filters" data-race-filters role="tablist" aria-label="Race Center Filter">
+              <button type="button" class="race-filter is-active" data-race-filter="all" aria-pressed="true">Alle</button>
+              <button type="button" class="race-filter" data-race-filter="technik" aria-pressed="false">Technik</button>
+              <button type="button" class="race-filter" data-race-filter="rennen" aria-pressed="false">Rennen</button>
+              <button type="button" class="race-filter" data-race-filter="team" aria-pressed="false">Team</button>
+            </div>
+
+            <p class="small muted race-feed-status" data-race-feed-status aria-live="polite">Lade Race Center ...</p>
             <div class="feed" data-feed aria-live="polite"></div>
+
+            <div class="race-polls" data-race-polls aria-live="polite">
+              <h4>Fan Polls</h4>
+              <div class="race-polls-list" data-race-polls-list></div>
+            </div>
           </div>
         </div>
       </div>
@@ -481,7 +518,7 @@
           <h2>Kontakt</h2>
           <p class="muted">
             Schreib uns für Sponsoring, Mitmachen, Presse oder einfach, um Hallo zu sagen.
-            Das Formular ist statisch (ohne Backend) – du kannst es z.B. mit Netlify Forms oder Formspree verbinden.
+            Das Formular wird direkt über unser Lead-System verarbeitet.
           </p>
 
           <div class="contact-cards">
@@ -529,9 +566,9 @@
             <textarea id="msg" name="msg" rows="5" placeholder="Worum geht’s?" required></textarea>
           </div>
 
-          <button class="btn" type="submit">Nachricht vorbereiten</button>
+          <button class="btn" type="submit">Nachricht senden</button>
           <p class="small muted" id="formHint">
-            Beim Absenden öffnet sich dein Mail-Client mit vorausgefüllter Nachricht.
+            Deine Anfrage wird direkt über unser Formular-System übermittelt.
           </p>
         </form>
       </div>

@@ -4,7 +4,7 @@
   "private": true,
   "description": "Secure static backend for the Bembel Racing Team website",
   "dependencies": {
-    "nodemailer": "^6.10.1"
+    "nodemailer": "^8.0.1"
   },
   "scripts": {
     "start": "node server.js",

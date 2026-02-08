@@ -6,6 +6,39 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const apiBaseMeta = $('meta[name="api-base"]')?.getAttribute("content")?.trim() || "";
+  const apiBaseByHost =
+    window.location.hostname === "www.bembelracingteam.de" || window.location.hostname === "bembelracingteam.de"
+      ? "https://api.bembelracingteam.de"
+      : "";
+  const apiBase = apiBaseMeta || apiBaseByHost;
+  const mailFallbackEnabled =
+    (($('meta[name="mail-fallback-enabled"]')?.getAttribute("content") || "").trim().toLowerCase() === "true");
+
+  const toApiUrl = (path) => {
+    if (!apiBase) return path;
+    try {
+      return new URL(path, `${apiBase.replace(/\/+$/, "")}/`).toString();
+    } catch {
+      return path;
+    }
+  };
+
+  const getApiFailureHint = (err) => {
+    if (window.location.protocol === "file:") {
+      return "Die Seite wird als lokale Datei geöffnet. API-Routen funktionieren nur über den Node-Server.";
+    }
+    if (!navigator.onLine) {
+      return "Es besteht aktuell keine Netzwerkverbindung.";
+    }
+    if (Number.isFinite(err?.status)) {
+      return `Backend antwortet mit HTTP ${err.status}.`;
+    }
+    if (apiBase) {
+      return `Backend nicht erreichbar unter ${apiBase}.`;
+    }
+    return "Backend nicht erreichbar. Starte den Server mit `npm run dev` und öffne die Seite über `http://127.0.0.1:8080/`.";
+  };
 
   // ---- Section build on scroll ----
   const sections = $$("main > section");
@@ -360,7 +393,7 @@
       }
 
       try {
-        const response = await fetch("/api/leads/sponsor", {
+        const response = await fetch(toApiUrl("/api/leads/sponsor"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "same-origin",
@@ -381,7 +414,9 @@
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
+          const err = new Error(`HTTP ${response.status}`);
+          err.status = response.status;
+          throw err;
         }
 
         sponsorForm.reset();
@@ -391,10 +426,22 @@
         if (formHint) {
           formHint.textContent = "Danke! Anfrage erfolgreich übermittelt.";
         }
-      } catch {
-        openMailFallback({ name, company, email, phone, startWindow, interests, message });
+      } catch (err) {
+        if (err?.status === 429) {
+          if (formHint) {
+            formHint.textContent = "Zu viele Anfragen in kurzer Zeit. Bitte kurz warten.";
+          }
+          return;
+        }
+
+        if (mailFallbackEnabled) {
+          openMailFallback({ name, company, email, phone, startWindow, interests, message });
+        }
         if (formHint) {
-          formHint.textContent = "API aktuell nicht erreichbar. E-Mail-Client wird geöffnet.";
+          const hint = getApiFailureHint(err);
+          formHint.textContent = mailFallbackEnabled
+            ? "API aktuell nicht erreichbar. E-Mail-Client wird geöffnet."
+            : `Senden derzeit nicht möglich. ${hint}`;
         }
       } finally {
         if (submitBtn instanceof HTMLButtonElement) {

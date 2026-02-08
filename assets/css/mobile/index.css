@@ -32,6 +32,35 @@
   #race .race-roadmap{
     margin-top: 12px;
   }
+  #race .race-center-head{
+    align-items:stretch;
+    flex-direction:column;
+  }
+  #race .race-center-head .btn{
+    width: 100%;
+  }
+  #race .race-center-follow .btn{
+    width: 100%;
+  }
+  #race .race-filters{
+    top: 74px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+  }
+  #race .race-filter{
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+  #race .post-top{
+    flex-direction: column;
+    align-items:flex-start;
+    gap: 8px;
+  }
+  #race .poll-option-line{
+    font-size: 12px;
+  }
   #contact .form .btn{
     width: 100%;
   }
@@ -49,6 +78,15 @@
   }
   #about .feature h3{
     font-size: 18px;
+  }
+  .card-summary .card-row{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:6px;
+  }
+  .card-summary .card-row strong{
+    max-width: 100%;
+    text-align:left;
   }
   .footer-links{
     width: 100%;

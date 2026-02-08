@@ -348,6 +348,19 @@ button, input, select, textarea{ font: inherit; }
   display:grid;
   gap:10px;
 }
+.card-summary{
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.card-summary .card-row{
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
+.card-summary .card-row strong{
+  max-width: 58%;
+  text-align: right;
+  font-size: 13px;
+  color: rgba(232,237,246,.92);
+}
 
 .ticker{
   margin-top: 12px;
@@ -772,6 +785,65 @@ button, input, select, textarea{ font: inherit; }
 .race-card--updates .feed{
   flex: 1 1 auto;
 }
+.race-center-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.race-center-head h3{
+  margin:0;
+}
+.race-center-follow{
+  margin-top: 12px;
+  padding: 10px 12px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  background: rgba(255,255,255,.03);
+  display:grid;
+  gap:8px;
+}
+[data-race-follow-toggle].is-on{
+  border-color: rgba(255,106,0,.45);
+  background: rgba(255,106,0,.15);
+}
+[data-race-follow-toggle].has-news{
+  box-shadow: 0 0 0 3px rgba(255,106,0,.16);
+}
+.race-filters{
+  margin-top: 12px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  position:sticky;
+  top: 88px;
+  z-index:3;
+  padding: 8px 0 6px;
+  background: linear-gradient(180deg, rgba(20,24,32,.96) 42%, rgba(20,24,32,0));
+}
+.race-filter{
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.03);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor:pointer;
+  transition: border-color .2s var(--ease), background .2s var(--ease), color .2s var(--ease);
+}
+.race-filter:hover{
+  color: var(--text);
+  border-color: rgba(255,255,255,.25);
+}
+.race-filter.is-active{
+  color: #0b0d10;
+  border-color: rgba(255,106,0,.65);
+  background: linear-gradient(135deg, rgba(255,106,0,.92), rgba(255,138,43,.84));
+}
+.race-feed-status{
+  margin: 8px 0 2px;
+}
 .post{
   border:1px solid rgba(255,255,255,.10);
   background: rgba(10,12,15,.32);
@@ -786,14 +858,146 @@ button, input, select, textarea{ font: inherit; }
   margin-bottom: 6px;
 }
 .post-title{ font-weight:800; }
+.post-title-wrap{
+  display:grid;
+  gap:5px;
+}
+.feed-tag{
+  display:inline-flex;
+  align-items:center;
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  color: rgba(232,237,246,.84);
+}
+.feed-tag[data-category="technik"]{
+  border-color: rgba(255,138,43,.42);
+  background: rgba(255,138,43,.13);
+  color: #ffd0a6;
+}
+.feed-tag[data-category="rennen"]{
+  border-color: rgba(255,106,0,.42);
+  background: rgba(255,106,0,.15);
+  color: #ffe0c6;
+}
+.feed-tag[data-category="team"]{
+  border-color: rgba(255,255,255,.20);
+  background: rgba(255,255,255,.06);
+  color: #dbe4f4;
+}
 .post-time{ color: var(--muted); font-size: 12px; }
 .post-body{ color: rgba(232,237,246,.86); }
-.feed-actions{
+.post-reactions{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:8px;
   margin-top: 12px;
   flex-wrap:wrap;
+}
+.reaction-btn{
+  border:1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.03);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 6px 10px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size: 12px;
+  cursor:pointer;
+}
+.reaction-btn:hover{
+  border-color: rgba(255,138,43,.45);
+}
+.reaction-btn.is-selected{
+  border-color: rgba(255,106,0,.65);
+  background: rgba(255,106,0,.18);
+}
+.reaction-btn:disabled{
+  opacity:.68;
+  cursor: default;
+}
+.reaction-count{
+  min-width: 12px;
+  text-align: right;
+}
+
+.race-polls{
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+.race-polls h4{
+  margin:0 0 10px;
+  font-size: 15px;
+}
+.race-polls-list{
+  display:grid;
+  gap:10px;
+}
+.poll-card{
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(8,10,13,.28);
+  border-radius: 14px;
+  padding: 12px;
+}
+.poll-question{
+  margin:0 0 10px;
+  font-size: 14px;
+  font-weight:700;
+}
+.poll-options{
+  display:grid;
+  gap:8px;
+}
+.poll-option{
+  width:100%;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius: 12px;
+  background: rgba(255,255,255,.03);
+  color: var(--text);
+  text-align:left;
+  padding: 8px 10px;
+  cursor:pointer;
+}
+.poll-option:hover{
+  border-color: rgba(255,138,43,.45);
+}
+.poll-option.is-selected{
+  border-color: rgba(255,106,0,.60);
+  background: rgba(255,106,0,.16);
+}
+.poll-option:disabled{
+  cursor: default;
+}
+.poll-option-line{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  font-size: 13px;
+}
+.poll-option-bar{
+  display:block;
+  margin-top: 7px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.07);
+  overflow:hidden;
+}
+.poll-option-bar > span{
+  display:block;
+  height:100%;
+  width:0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+.poll-meta{
+  margin-top: 8px;
 }
 
 /* Gallery */

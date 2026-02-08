@@ -6,6 +6,7 @@ const fsp = require("node:fs/promises");
 const path = require("node:path");
 const crypto = require("node:crypto");
 const { createLeadFunnel } = require("./lead-funnel");
+const { createRaceCenter } = require("./race-center");
 
 const ROOT_DIR = path.resolve(__dirname);
 const ASSETS_DIR = path.join(ROOT_DIR, "assets");
@@ -47,6 +48,15 @@ const ALLOWED_HOSTS = new Set(
     .map((host) => host.trim().toLowerCase())
     .filter(Boolean)
 );
+
+const CORS_ALLOWED_ORIGINS = new Set(
+  (process.env.CORS_ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((origin) => normalizeOrigin(origin))
+    .filter(Boolean)
+);
+const CORS_ALLOW_ALL = CORS_ALLOWED_ORIGINS.has("*");
+const CORS_ALLOW_CREDENTIALS = process.env.CORS_ALLOW_CREDENTIALS !== "false";
 
 const ALLOWED_METHODS = new Set(["GET", "HEAD", "OPTIONS", "POST", "PATCH"]);
 const STATIC_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
@@ -113,6 +123,12 @@ const leadFunnel = createLeadFunnel({
   logSecurity,
 });
 
+const raceCenter = createRaceCenter({
+  rootDir: ROOT_DIR,
+  maxBodyBytes: MAX_CONTENT_LENGTH,
+  logSecurity,
+});
+
 const server = http.createServer(handleRequest);
 server.requestTimeout = REQUEST_TIMEOUT_MS;
 server.headersTimeout = REQUEST_TIMEOUT_MS + 5_000;
@@ -126,6 +142,9 @@ server.listen(PORT, HOST, () => {
   }
   if (ALLOWED_HOSTS.size > 0) {
     logInfo(`Allowed hosts: ${Array.from(ALLOWED_HOSTS).join(", ")}`);
+  }
+  if (CORS_ALLOWED_ORIGINS.size > 0) {
+    logInfo(`Allowed CORS origins: ${Array.from(CORS_ALLOWED_ORIGINS).join(", ")}`);
   }
 });
 
@@ -145,6 +164,7 @@ async function handleRequest(req, res) {
 
   res.setHeader("X-Request-Id", requestId);
   applySecurityHeaders(res);
+  applyCorsHeaders(req, res);
 
   if (!enterInflight(clientIp)) {
     return sendError(req, res, 429, "Too Many Requests", {
@@ -210,6 +230,10 @@ async function handleRequest(req, res) {
     if (pathname.startsWith("/api/")) {
       const handled = await leadFunnel.handle(req, res, { method, pathname, clientIp });
       if (handled) return;
+
+      const raceHandled = await raceCenter.handle(req, res, { method, pathname, clientIp });
+      if (raceHandled) return;
+
       return sendError(req, res, 404, "Not Found", { "Cache-Control": "no-store" });
     }
 
@@ -306,6 +330,38 @@ function applySecurityHeaders(res) {
   if (FORCE_HTTPS) {
     res.setHeader("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
   }
+}
+
+function applyCorsHeaders(req, res) {
+  const origin = normalizeOrigin(req.headers.origin || "");
+  if (!origin) return;
+
+  const allowedOrigin = getAllowedCorsOrigin(origin);
+  if (!allowedOrigin) return;
+
+  const vary = String(res.getHeader("Vary") || "");
+  if (!vary) {
+    res.setHeader("Vary", "Origin");
+  } else if (!vary.split(",").map((part) => part.trim().toLowerCase()).includes("origin")) {
+    res.setHeader("Vary", `${vary}, Origin`);
+  }
+
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+  if (CORS_ALLOW_CREDENTIALS && allowedOrigin !== "*") {
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+  }
+  res.setHeader("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS, POST, PATCH");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Admin-Token");
+  res.setHeader("Access-Control-Max-Age", "86400");
+  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+}
+
+function getAllowedCorsOrigin(origin) {
+  if (!origin) return "";
+  if (CORS_ALLOW_ALL) {
+    return CORS_ALLOW_CREDENTIALS ? origin : "*";
+  }
+  return CORS_ALLOWED_ORIGINS.has(origin) ? origin : "";
 }
 
 function sendError(req, res, statusCode, message, extraHeaders = {}) {
@@ -441,6 +497,7 @@ function cleanupStores() {
   }
 
   leadFunnel.cleanup();
+  raceCenter.cleanup();
 }
 
 function enterInflight(ip) {
@@ -479,6 +536,18 @@ function normalizeHost(hostHeader) {
 
   const withoutPort = source.split(":")[0];
   return withoutPort;
+}
+
+function normalizeOrigin(originHeader) {
+  const source = String(originHeader || "").split(",")[0].trim();
+  if (!source) return "";
+  if (source === "*") return "*";
+  try {
+    const parsed = new URL(source);
+    return parsed.origin.toLowerCase();
+  } catch {
+    return "";
+  }
 }
 
 function getClientIp(req) {
