@@ -818,11 +818,12 @@ button, input, select, textarea{ font: inherit; }
   inset:0;
   display:none;
   place-items:center;
-  background: rgba(0,0,0,.78);
+  background: rgba(3,6,10,.84);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   padding: 22px;
-  z-index:1000;
+  z-index:12000;
+  isolation:isolate;
 }
 .lightbox[aria-hidden="false"]{ display:grid; }
 .lightbox-img{
@@ -830,7 +831,7 @@ button, input, select, textarea{ font: inherit; }
   max-height: 82vh;
   border-radius: 18px;
   border:1px solid rgba(255,255,255,.14);
-  box-shadow: var(--shadow);
+  box-shadow: 0 28px 80px rgba(0,0,0,.62), var(--shadow);
 }
 .lightbox-nav{
   position:absolute;
@@ -842,16 +843,35 @@ button, input, select, textarea{ font: inherit; }
   border:1px solid rgba(255,255,255,.18);
   background: rgba(10,12,15,.62);
   color: var(--text);
-  font-size: 26px;
+  font-size: 0;
   line-height:1;
   display:grid;
   place-items:center;
+  padding:0;
   cursor:pointer;
   z-index:1001;
+  transition: border-color .2s var(--ease), background .2s var(--ease), transform .2s var(--ease);
 }
 .lightbox-nav:hover{
   border-color: rgba(255,106,0,.45);
   background: rgba(15,17,20,.85);
+  transform: translateY(-50%) scale(1.04);
+}
+.lightbox-nav:disabled{
+  cursor: default;
+}
+.lightbox-nav[hidden]{
+  display:none;
+}
+.lightbox-nav svg{
+  width: 21px;
+  height: 21px;
+  stroke: currentColor;
+  stroke-width: 2.3;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events:none;
 }
 .lightbox-prev{ left: 18px; }
 .lightbox-next{ right: 18px; }

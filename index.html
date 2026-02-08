@@ -385,8 +385,16 @@
 
       <!-- Lightbox -->
       <div class="lightbox" data-lightbox-modal aria-hidden="true" role="dialog" aria-label="Bildanzeige">
-        <button class="lightbox-nav lightbox-prev" type="button" data-lightbox-prev aria-label="Vorheriges Bild">&lt;</button>
-        <button class="lightbox-nav lightbox-next" type="button" data-lightbox-next aria-label="Nächstes Bild">&gt;</button>
+        <button class="lightbox-nav lightbox-prev" type="button" data-lightbox-prev aria-label="Vorheriges Bild">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M14.5 5.5L8 12l6.5 6.5"></path>
+          </svg>
+        </button>
+        <button class="lightbox-nav lightbox-next" type="button" data-lightbox-next aria-label="Nächstes Bild">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M9.5 5.5L16 12l-6.5 6.5"></path>
+          </svg>
+        </button>
         <button class="lightbox-close" type="button" data-lightbox-close aria-label="Schließen">✕</button>
         <img class="lightbox-img" data-lightbox-img alt="" />
       </div>

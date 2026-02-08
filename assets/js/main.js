@@ -325,15 +325,29 @@
   const nextBtn = document.querySelector("[data-lightbox-next]");
   let currentLightboxIndex = -1;
 
+  // Keep lightbox outside animated sections so fixed positioning always uses the viewport.
+  if (modal && modal.parentElement !== document.body) {
+    document.body.appendChild(modal);
+  }
+
   const getGalleryImageButtons = () => {
     return galleryItems.filter(btn => !!btn.querySelector("img"));
   };
 
   const updateLightboxNav = () => {
-    if (!prevBtn || !nextBtn) return;
     const items = getGalleryImageButtons();
-    prevBtn.hidden = currentLightboxIndex <= 0 || items.length <= 1;
-    nextBtn.hidden = currentLightboxIndex >= items.length - 1 || items.length <= 1;
+    const hasMultipleItems = items.length > 1;
+    const canGoPrev = hasMultipleItems && currentLightboxIndex > 0;
+    const canGoNext = hasMultipleItems && currentLightboxIndex >= 0 && currentLightboxIndex < items.length - 1;
+
+    if (prevBtn) {
+      prevBtn.hidden = !canGoPrev;
+      prevBtn.disabled = !canGoPrev;
+    }
+    if (nextBtn) {
+      nextBtn.hidden = !canGoNext;
+      nextBtn.disabled = !canGoNext;
+    }
   };
 
   const openLightboxByIndex = (index) => {
@@ -396,7 +410,10 @@
       openLightboxByIndex(currentLightboxIndex - 1);
     }
     if (e.key === "ArrowRight") {
-      openLightboxByIndex(currentLightboxIndex + 1);
+      const items = getGalleryImageButtons();
+      if (currentLightboxIndex < items.length - 1) {
+        openLightboxByIndex(currentLightboxIndex + 1);
+      }
     }
   });
 
