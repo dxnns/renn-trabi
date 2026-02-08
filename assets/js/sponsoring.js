@@ -191,7 +191,12 @@
   }
 
   if (sponsorForm) {
-    sponsorForm.addEventListener("submit", (e) => {
+    const formHint = sponsorForm.querySelector(".form-actions .muted.small");
+    const submitBtn = sponsorForm.querySelector("button[type='submit']");
+    const initialHint = formHint?.textContent || "";
+    const formStartedAt = Date.now();
+
+    sponsorForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const name = $("#sponsorName")?.value?.trim() || "";
@@ -202,29 +207,61 @@
       const message = $("#sponsorMsg")?.value?.trim() || "";
       const interests = $$("input[name='interest']:checked", sponsorForm).map(i => i.value);
 
-      const to = "sponsoring@bembelracingteam.de";
-      const subject = encodeURIComponent(
-        `[Sponsoring] ${company || "Anfrage"} – ${state.selectedPlan} (${formatEUR(state.amount)} EUR)`
-      );
-      const body = encodeURIComponent(
-        [
-          `Name: ${name}`,
-          `Unternehmen: ${company}`,
-          `E-Mail: ${email}`,
-          `Telefon: ${phone || "-"}`,
-          `Paket: ${state.selectedPlan}`,
-          `Budget: ${formatEUR(state.amount)} EUR`,
-          `Startzeitraum: ${startWindow}`,
-          `Interessen: ${interests.length ? interests.join(", ") : "-"}`,
-          "",
-          "Nachricht:",
-          message || "-",
-          "",
-          "Gesendet über die Sponsoring-Anfrage-Seite.",
-        ].join("\n")
-      );
+      if (submitBtn instanceof HTMLButtonElement) {
+        submitBtn.disabled = true;
+      }
+      if (formHint) {
+        formHint.textContent = "Senden ...";
+      }
 
-      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+      try {
+        const response = await fetch("/api/leads/sponsor", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify({
+            name,
+            company,
+            email,
+            phone,
+            selectedPlan: state.selectedPlan,
+            selectedAmount: state.amount,
+            startWindow,
+            interests,
+            message,
+            website: "",
+            pagePath: window.location.pathname,
+            formStartedAt,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        sponsorForm.reset();
+        if (amountRange) amountRange.value = String(state.amount);
+        setSelectedPlan(state.selectedPlan);
+        updateBudgetUI();
+        if (formHint) {
+          formHint.textContent = "Danke! Anfrage erfolgreich übermittelt.";
+        }
+      } catch {
+        if (formHint) {
+          formHint.textContent = "Senden fehlgeschlagen. Bitte später erneut versuchen.";
+        }
+      } finally {
+        if (submitBtn instanceof HTMLButtonElement) {
+          submitBtn.disabled = false;
+        }
+        if (formHint && initialHint) {
+          window.setTimeout(() => {
+            if (formHint.textContent !== initialHint) {
+              formHint.textContent = initialHint;
+            }
+          }, 7000);
+        }
+      }
     });
   }
 

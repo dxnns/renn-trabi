@@ -521,10 +521,15 @@
 
   renderFeed();
 
-  // ---- Contact form: open mail client ----
+  // ---- Contact form: backend lead submit ----
   const form = document.getElementById("contactForm");
   if (form) {
-    form.addEventListener("submit", (e) => {
+    const formHint = document.getElementById("formHint");
+    const submitBtn = form.querySelector("button[type='submit']");
+    const initialHint = formHint?.textContent || "";
+    const formStartedAt = Date.now();
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const name = $("#name")?.value?.trim() || "";
@@ -532,13 +537,53 @@
       const topic = $("#topic")?.value || "Kontakt";
       const msg = $("#msg")?.value?.trim() || "";
 
-      const to = "kontakt@bembelracingteam.de";
-      const subject = encodeURIComponent(`[${topic}] Anfrage über Website – ${name || "ohne Namen"}`);
-      const body = encodeURIComponent(
-        `Name: ${name}\nE-Mail: ${email}\nThema: ${topic}\n\nNachricht:\n${msg}\n\n—\nGesendet via Website`
-      );
+      if (submitBtn instanceof HTMLButtonElement) {
+        submitBtn.disabled = true;
+      }
+      if (formHint) {
+        formHint.textContent = "Senden ...";
+      }
 
-      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+      try {
+        const response = await fetch("/api/leads/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify({
+            name,
+            email,
+            topic,
+            msg,
+            website: "",
+            pagePath: window.location.pathname,
+            formStartedAt,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        form.reset();
+        if (formHint) {
+          formHint.textContent = "Danke! Anfrage erfolgreich übermittelt.";
+        }
+      } catch {
+        if (formHint) {
+          formHint.textContent = "Senden fehlgeschlagen. Bitte später erneut versuchen.";
+        }
+      } finally {
+        if (submitBtn instanceof HTMLButtonElement) {
+          submitBtn.disabled = false;
+        }
+        if (formHint && initialHint) {
+          window.setTimeout(() => {
+            if (formHint.textContent !== initialHint) {
+              formHint.textContent = initialHint;
+            }
+          }, 7000);
+        }
+      }
     });
   }
 })();

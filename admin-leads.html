@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lead Inbox | Bembel Racing Team</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#0f1114" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/admin-leads.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="panel">
+      <h1>Lead Inbox</h1>
+      <p class="muted">Internes CRM-Light für Kontakt- und Sponsoring-Anfragen.</p>
+      <div class="token-row">
+        <label for="adminToken">Admin-Token</label>
+        <input id="adminToken" type="password" autocomplete="off" placeholder="ADMIN_TOKEN" />
+        <button id="connectBtn" class="btn" type="button">Verbinden</button>
+      </div>
+      <p id="sessionHint" class="hint muted">Nicht verbunden</p>
+    </header>
+
+    <section class="panel">
+      <div class="filters">
+        <label>
+          Typ
+          <select id="typeFilter">
+            <option value="">Alle</option>
+            <option value="contact">Kontakt</option>
+            <option value="sponsor">Sponsoring</option>
+          </select>
+        </label>
+        <label>
+          Status
+          <select id="statusFilter">
+            <option value="">Alle</option>
+            <option value="new">new</option>
+            <option value="qualified">qualified</option>
+            <option value="contacted">contacted</option>
+            <option value="won">won</option>
+            <option value="lost">lost</option>
+            <option value="spam">spam</option>
+          </select>
+        </label>
+        <label class="search">
+          Suche
+          <input id="searchInput" type="search" placeholder="Name, Firma, E-Mail, Nachricht ..." />
+        </label>
+        <button id="refreshBtn" class="btn btn-ghost" type="button">Aktualisieren</button>
+      </div>
+      <p id="statsLine" class="muted">Noch keine Daten geladen.</p>
+    </section>
+
+    <section class="panel">
+      <div id="leadList" class="lead-list"></div>
+    </section>
+  </main>
+
+  <template id="leadTemplate">
+    <article class="lead-card">
+      <header class="lead-head">
+        <div>
+          <h2 data-lead-title></h2>
+          <p class="muted small" data-lead-meta></p>
+        </div>
+        <span class="badge" data-lead-status></span>
+      </header>
+      <p class="small" data-lead-message></p>
+      <dl class="lead-details" data-lead-details></dl>
+      <div class="lead-actions">
+        <label>
+          Status setzen
+          <select data-status-next>
+            <option value="new">new</option>
+            <option value="qualified">qualified</option>
+            <option value="contacted">contacted</option>
+            <option value="won">won</option>
+            <option value="lost">lost</option>
+            <option value="spam">spam</option>
+          </select>
+        </label>
+        <input data-status-note type="text" placeholder="Notiz (optional)" />
+        <button class="btn btn-small" type="button" data-status-save>Speichern</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="assets/js/admin-leads.js" defer></script>
+</body>
+</html>

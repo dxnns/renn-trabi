@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const fsp = require("node:fs/promises");
 const path = require("node:path");
 const crypto = require("node:crypto");
+const { createLeadFunnel } = require("./lead-funnel");
 
 const ROOT_DIR = path.resolve(__dirname);
 const ASSETS_DIR = path.join(ROOT_DIR, "assets");
@@ -15,7 +16,7 @@ const PORT = toInt(process.env.PORT, 8080, { min: 1, max: 65535 });
 const TRUST_PROXY = process.env.TRUST_PROXY === "true";
 const FORCE_HTTPS = process.env.FORCE_HTTPS === "true";
 const MAX_URL_LENGTH = toInt(process.env.MAX_URL_LENGTH, 2048, { min: 256, max: 16_384 });
-const MAX_CONTENT_LENGTH = toInt(process.env.MAX_CONTENT_LENGTH, 1024, { min: 0, max: 1024 * 1024 });
+const MAX_CONTENT_LENGTH = toInt(process.env.MAX_CONTENT_LENGTH, 16_384, { min: 0, max: 1024 * 1024 });
 const MAX_CONCURRENT_REQUESTS_PER_IP = toInt(
   process.env.MAX_CONCURRENT_REQUESTS_PER_IP,
   24,
@@ -47,7 +48,8 @@ const ALLOWED_HOSTS = new Set(
     .filter(Boolean)
 );
 
-const ALLOWED_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+const ALLOWED_METHODS = new Set(["GET", "HEAD", "OPTIONS", "POST", "PATCH"]);
+const STATIC_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const PAGE_ROUTES = new Map([
   ["/", "index.html"],
   ["/index.html", "index.html"],
@@ -55,6 +57,8 @@ const PAGE_ROUTES = new Map([
   ["/team.html", "team.html"],
   ["/sponsoring-anfrage", "sponsoring-anfrage.html"],
   ["/sponsoring-anfrage.html", "sponsoring-anfrage.html"],
+  ["/admin-leads", "admin-leads.html"],
+  ["/admin-leads.html", "admin-leads.html"],
 ]);
 
 const MIME_TYPES = new Map([
@@ -103,6 +107,12 @@ const CSP = [
   "block-all-mixed-content",
 ].join("; ");
 
+const leadFunnel = createLeadFunnel({
+  rootDir: ROOT_DIR,
+  maxBodyBytes: MAX_CONTENT_LENGTH,
+  logSecurity,
+});
+
 const server = http.createServer(handleRequest);
 server.requestTimeout = REQUEST_TIMEOUT_MS;
 server.headersTimeout = REQUEST_TIMEOUT_MS + 5_000;
@@ -146,7 +156,7 @@ async function handleRequest(req, res) {
   try {
     if (!ALLOWED_METHODS.has(method)) {
       return sendError(req, res, 405, "Method Not Allowed", {
-        Allow: "GET, HEAD, OPTIONS",
+        Allow: "GET, HEAD, OPTIONS, POST, PATCH",
         "Cache-Control": "no-store",
       });
     }
@@ -182,14 +192,6 @@ async function handleRequest(req, res) {
       }
     }
 
-    if (method === "OPTIONS") {
-      res.writeHead(204, {
-        Allow: "GET, HEAD, OPTIONS",
-        "Cache-Control": "no-store",
-      });
-      return res.end();
-    }
-
     const rateResult = checkRateLimit(clientIp);
     if (!rateResult.allowed) {
       logSecurity("rate_limited", `ip=${sanitize(clientIp)} retry_after=${rateResult.retryAfter}`);
@@ -203,6 +205,27 @@ async function handleRequest(req, res) {
     if (isSuspiciousPath(pathname)) {
       logSecurity("path_probe", `ip=${sanitize(clientIp)} path=${sanitize(pathname)}`);
       return sendError(req, res, 404, "Not Found", { "Cache-Control": "no-store" });
+    }
+
+    if (pathname.startsWith("/api/")) {
+      const handled = await leadFunnel.handle(req, res, { method, pathname, clientIp });
+      if (handled) return;
+      return sendError(req, res, 404, "Not Found", { "Cache-Control": "no-store" });
+    }
+
+    if (!STATIC_METHODS.has(method)) {
+      return sendError(req, res, 405, "Method Not Allowed", {
+        Allow: "GET, HEAD, OPTIONS",
+        "Cache-Control": "no-store",
+      });
+    }
+
+    if (method === "OPTIONS") {
+      res.writeHead(204, {
+        Allow: "GET, HEAD, OPTIONS",
+        "Cache-Control": "no-store",
+      });
+      return res.end();
     }
 
     const absoluteFilePath = resolveFilePath(pathname);
@@ -416,6 +439,8 @@ function cleanupStores() {
       INFLIGHT_REQUESTS.delete(ip);
     }
   }
+
+  leadFunnel.cleanup();
 }
 
 function enterInflight(ip) {
