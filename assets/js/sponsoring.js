@@ -92,14 +92,17 @@
 
   const planMeta = {
     Bronze: {
+      minAmount: 450,
       visibility: "Website + Update-Erwähnung",
       note: "Solider Einstieg mit klarer Sichtbarkeit in der Community.",
     },
     Silber: {
+      minAmount: 1100,
       visibility: "Website + Fahrzeugbereich + Content",
       note: "Ausgewogene Mischung aus Reichweite und Markenpräsenz.",
     },
     Gold: {
+      minAmount: 2200,
       visibility: "Prominente Platzierung + Co-Branding",
       note: "Maximale Sichtbarkeit und enge Zusammenarbeit.",
     },
@@ -108,10 +111,24 @@
   const formatEUR = (value) =>
     new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 }).format(value);
 
+  const getPlanForAmount = (amount) => {
+    if (amount >= planMeta.Gold.minAmount) return "Gold";
+    if (amount >= planMeta.Silber.minAmount) return "Silber";
+    return "Bronze";
+  };
+
   const getRecommendedPlan = (amount) => {
-    if (amount < 900) return "Bronze";
-    if (amount < 2200) return "Silber";
-    return "Gold";
+    return getPlanForAmount(amount);
+  };
+
+  const normalizeAmount = (value) => {
+    const min = Number(amountRange?.min || 300);
+    const max = Number(amountRange?.max || 5000);
+    const step = Number(amountRange?.step || 50);
+    const raw = Number(value);
+    const safe = Number.isFinite(raw) ? raw : min;
+    const clamped = Math.max(min, Math.min(max, safe));
+    return Math.round(clamped / step) * step;
   };
 
   const getImpactTag = (amount) => {
@@ -127,6 +144,7 @@
   };
 
   const setSelectedPlan = (planName) => {
+    if (!planMeta[planName]) return;
     state.selectedPlan = planName;
     planCards.forEach(card => {
       const isSelected = card.getAttribute("data-plan") === planName;
@@ -135,8 +153,18 @@
     if (selectedPlanInput) selectedPlanInput.value = planName;
   };
 
+  const setAmount = (value, { syncPlanFromAmount = true } = {}) => {
+    const normalized = normalizeAmount(value);
+    state.amount = normalized;
+    if (amountRange) amountRange.value = String(normalized);
+    if (syncPlanFromAmount) {
+      setSelectedPlan(getPlanForAmount(normalized));
+    }
+  };
+
   const updateBudgetUI = () => {
-    const amount = state.amount;
+    const amount = normalizeAmount(state.amount);
+    state.amount = amount;
     const recommended = getRecommendedPlan(amount);
     const activeMeta = planMeta[state.selectedPlan] || planMeta.Bronze;
 
@@ -161,13 +189,14 @@
       const planName = card.getAttribute("data-plan");
       if (!planName) return;
       setSelectedPlan(planName);
+      setAmount(planMeta[planName].minAmount, { syncPlanFromAmount: false });
       updateBudgetUI();
     });
   });
 
   if (amountRange) {
     amountRange.addEventListener("input", () => {
-      state.amount = Number(amountRange.value);
+      setAmount(Number(amountRange.value), { syncPlanFromAmount: true });
       updateBudgetUI();
     });
   }
@@ -175,20 +204,110 @@
   amountChips.forEach(chip => {
     chip.addEventListener("click", () => {
       const amount = Number(chip.getAttribute("data-amount-chip"));
-      if (!amount || !amountRange) return;
-      amountRange.value = String(amount);
-      state.amount = amount;
+      if (!amount) return;
+      setAmount(amount, { syncPlanFromAmount: true });
       updateBudgetUI();
     });
   });
 
-  if (fundingBar) {
-    const target = Number(fundingBar.getAttribute("data-target")) || 68;
-    requestAnimationFrame(() => {
-      fundingBar.style.width = `${Math.max(0, Math.min(100, target))}%`;
-      if (fundingValue) fundingValue.textContent = `${target}%`;
+  const animateNumber = ({ from = 0, to = 0, duration = 900, onFrame, onDone }) => {
+    const start = performance.now();
+    const delta = to - from;
+
+    const step = (now) => {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = from + delta * eased;
+      if (typeof onFrame === "function") onFrame(current);
+      if (progress < 1) {
+        requestAnimationFrame(step);
+        return;
+      }
+      if (typeof onDone === "function") onDone();
+    };
+
+    requestAnimationFrame(step);
+  };
+
+  // ---- Hero metrics + funding animation ----
+  const heroMetrics = $$("[data-metric-target]");
+  const fundingTarget = Number(fundingBar?.getAttribute("data-target")) || 68;
+
+  const renderMetricValue = (el, value) => {
+    const target = Number(el.getAttribute("data-metric-target")) || 0;
+    const safeValue = Math.max(0, Math.min(target, Math.round(value)));
+    const format = el.getAttribute("data-metric-format") || "number";
+
+    if (format === "ratio") {
+      const total = Number(el.getAttribute("data-metric-total")) || 12;
+      el.textContent = `${safeValue}/${total}`;
+      return;
+    }
+
+    if (format === "percent") {
+      el.textContent = `${safeValue}%`;
+      return;
+    }
+
+    el.textContent = String(safeValue);
+  };
+
+  const animateHeroStats = () => {
+    heroMetrics.forEach((el) => {
+      const target = Number(el.getAttribute("data-metric-target")) || 0;
+      if (reduceMotion) {
+        renderMetricValue(el, target);
+        return;
+      }
+
+      animateNumber({
+        from: 0,
+        to: target,
+        duration: target > 999 ? 1200 : 900,
+        onFrame: (value) => {
+          renderMetricValue(el, value);
+        },
+        onDone: () => {
+          renderMetricValue(el, target);
+        },
+      });
     });
-  }
+
+    if (!fundingBar) return;
+
+    const target = Math.max(0, Math.min(100, fundingTarget));
+    if (reduceMotion) {
+      fundingBar.style.width = `${target}%`;
+      if (fundingValue) fundingValue.textContent = `${target}%`;
+      return;
+    }
+
+    const previousTransition = fundingBar.style.transition;
+    fundingBar.style.transition = "none";
+    fundingBar.style.width = "0%";
+    if (fundingValue) fundingValue.textContent = "0%";
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        fundingBar.style.transition = previousTransition;
+        fundingBar.style.width = `${target}%`;
+      });
+    });
+
+    animateNumber({
+      from: 0,
+      to: target,
+      duration: 1000,
+      onFrame: (value) => {
+        if (fundingValue) fundingValue.textContent = `${Math.round(value)}%`;
+      },
+      onDone: () => {
+        if (fundingValue) fundingValue.textContent = `${target}%`;
+      },
+    });
+  };
+
+  animateHeroStats();
 
   if (sponsorForm) {
     const formHint = sponsorForm.querySelector(".form-actions .muted.small");
@@ -292,6 +411,6 @@
     });
   }
 
-  setSelectedPlan(state.selectedPlan);
+  setAmount(state.amount, { syncPlanFromAmount: true });
   updateBudgetUI();
 })();
