@@ -82,6 +82,18 @@
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  // ---- Back to top links ----
+  const backToTopLinks = $$('a[href="#top"]');
+  backToTopLinks.forEach((linkEl) => {
+    linkEl.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: reduceMotion ? "auto" : "smooth",
+      });
+    });
+  });
+
   // ---- Section build on scroll ----
   const sections = $$("main > section");
   if (sections.length) {
