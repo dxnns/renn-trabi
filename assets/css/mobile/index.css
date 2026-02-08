@@ -1,0 +1,57 @@
+/* Mobile overrides specific to index.html */
+
+@media (max-width: 900px){
+  .hero-copy{
+    max-width: 640px;
+  }
+  #about .feature-grid{
+    margin-top: 14px;
+    gap: 10px;
+  }
+  #about .feature{
+    padding: 12px;
+  }
+  #race .race-grid{
+    gap: 10px;
+  }
+  #sponsors .sponsor-grid{
+    gap: 10px;
+  }
+}
+
+@media (max-width: 760px){
+  .hero-bg{
+    background-position: 18% 8%, 86% 10%, 52% 82%, center, center 42%;
+  }
+  .hero-copy .badge{
+    margin-bottom: 10px;
+  }
+  #race .spec-list--race strong{
+    font-size: 13px;
+  }
+  #race .race-roadmap{
+    margin-top: 12px;
+  }
+  #contact .form .btn{
+    width: 100%;
+  }
+  #contact .contact-cards{
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 520px){
+  .hero-bg{
+    background-position: 14% 8%, 88% 10%, 50% 86%, center, center 44%;
+  }
+  .hero-copy .lead{
+    max-width: 34ch;
+  }
+  #about .feature h3{
+    font-size: 18px;
+  }
+  .footer-links{
+    width: 100%;
+    justify-content: space-between;
+  }
+}

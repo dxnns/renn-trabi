@@ -1,0 +1,99 @@
+/* Mobile overrides specific to sponsoring-anfrage.html */
+
+@media (max-width: 900px){
+  .topbar-inner{
+    min-height: 62px;
+    padding: 10px 0;
+  }
+  .hero-panel h1{
+    max-width: 100%;
+  }
+  .workspace{
+    gap: 12px;
+  }
+  .panel{
+    border-radius: 20px;
+    padding: 14px;
+  }
+  .summary-list li{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .summary-list li strong{
+    justify-self: start;
+  }
+}
+
+@media (max-width: 760px){
+  .topbar-inner{
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    min-height: auto;
+  }
+  .topbar-inner .back-link,
+  .topbar-inner .btn{
+    width: 100%;
+    justify-content: center;
+  }
+  .sponsor-main{
+    padding: 18px 0 42px;
+    gap: 12px;
+  }
+  .hero-panel{
+    padding: 16px;
+  }
+  .hero-panel h1{
+    font-size: clamp(24px, 8vw, 34px);
+  }
+  .hero-metrics{
+    gap: 8px;
+  }
+  .plan-card{
+    padding: 11px;
+  }
+  .amount-row{
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .amount-value{
+    font-size: clamp(22px, 7vw, 30px);
+  }
+  .chip-row{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .chip{
+    width: 100%;
+    text-align: center;
+  }
+  .fieldset{
+    padding: 10px;
+  }
+  .form-actions .btn{
+    width: 100%;
+  }
+  .form-actions .small{
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px){
+  .container{
+    width:min(var(--max), calc(100% - 22px));
+  }
+  .chip-row{
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (pointer: coarse) and (max-width: 760px){
+  .topbar-inner .btn,
+  .topbar-inner .back-link,
+  .chip,
+  .plan-card{
+    min-height: 44px;
+  }
+}

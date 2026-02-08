@@ -1,0 +1,68 @@
+/* Mobile overrides specific to team.html */
+
+@media (max-width: 900px){
+  .team-split-panel{
+    border-radius: 22px;
+  }
+  .team-copy h1{
+    font-size: clamp(30px, 7.5vw, 42px);
+  }
+  .team-copy .lead{
+    max-width: none;
+  }
+  .team-actions .btn{
+    flex: 1 1 calc(50% - 5px);
+  }
+  .team-portraits{
+    padding-top: 32px;
+  }
+}
+
+@media (max-width: 760px){
+  .team-stage{
+    padding-top: 24px;
+  }
+  .team-copy,
+  .team-image-wrap{
+    padding: 16px;
+  }
+  .team-actions .btn{
+    flex: 1 1 100%;
+  }
+  .team-figure{
+    border-radius: 14px;
+  }
+  .team-note{
+    font-size: 13px;
+  }
+  .portrait-media{
+    min-height: 150px;
+  }
+  .portrait-body h3{
+    font-size: 18px;
+  }
+  .team-member{
+    padding: 14px;
+  }
+  .team-member h3{
+    font-size: 20px;
+  }
+  .role-tag{
+    font-size: 11px;
+  }
+  .value-card{
+    padding: 14px;
+  }
+}
+
+@media (max-width: 520px){
+  .team-copy h1{
+    font-size: clamp(28px, 9vw, 36px);
+  }
+  .team-copy .lead{
+    font-size: 15px;
+  }
+  .portrait-body{
+    padding: 12px;
+  }
+}

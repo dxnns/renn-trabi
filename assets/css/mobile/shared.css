@@ -1,0 +1,234 @@
+/* Mobile overrides shared by pages that include assets/css/style.css */
+
+@media (max-width: 900px){
+  html{
+    -webkit-text-size-adjust: 100%;
+  }
+  body{
+    overflow-x: hidden;
+  }
+  .container{
+    width:min(var(--max), calc(100% - 32px));
+  }
+  .header-inner{
+    padding: 10px 0;
+    gap: 10px;
+  }
+  .brand{
+    gap: 10px;
+    min-width: 0;
+  }
+  .brand-text strong{
+    font-size: 17px;
+    line-height: 1.1;
+  }
+  .brand-sub{
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 760px){
+  .section{
+    padding: 52px 0;
+  }
+  .section-head h2{
+    font-size: clamp(24px, 7vw, 30px);
+  }
+  .hero{
+    padding: 32px 0 22px;
+  }
+  .hero-inner{
+    gap: 16px;
+  }
+  .hero h1{
+    font-size: clamp(31px, 9vw, 44px);
+  }
+  .lead{
+    font-size: 15px;
+    max-width: 45ch;
+  }
+  .hero-ctas{
+    gap: 8px;
+    margin: 16px 0;
+  }
+  .hero-ctas .btn{
+    flex: 1 1 calc(50% - 4px);
+    min-height: 46px;
+  }
+  .hero-card{
+    width: 100%;
+    max-width: none;
+  }
+  .hero-card .card{
+    border-radius: 22px;
+  }
+  .ticker{
+    border-radius: 20px;
+  }
+  .ticker-track{
+    gap: 24px;
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+  .stats{
+    gap: 8px;
+  }
+  .stat{
+    flex: 1 1 calc(33.333% - 6px);
+    min-width: 0;
+    padding: 10px;
+  }
+  .stat-k{
+    font-size: 20px;
+  }
+  .stat-l{
+    font-size: 11px;
+  }
+  .card-actions .btn{
+    width: 100%;
+  }
+  .split{
+    gap: 16px;
+  }
+  .panel,
+  .spec-card,
+  .race-card,
+  .sponsor-card,
+  .form{
+    border-radius: 20px;
+  }
+  .navmenu{
+    left: 16px;
+    right: 16px;
+    top: calc(100% + 8px);
+    min-width: 0;
+    padding: 12px;
+    border-radius: 16px;
+  }
+  .navmenu a{
+    width: 100%;
+    text-align: left;
+  }
+  .spec-list li{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    align-items: start;
+  }
+  .spec-list span{
+    font-size: 12px;
+  }
+  .spec-list strong{
+    text-align: left;
+  }
+  #car .spec-list strong{
+    margin-left: 0;
+    text-align: left;
+  }
+  .roadmap-item{
+    grid-template-columns: auto 1fr;
+  }
+  .roadmap-date{
+    grid-column: 2;
+    justify-self: start;
+  }
+  .gallery{
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .g-placeholder,
+  .gallery .g-item > img,
+  .g-thumb{
+    height: 220px;
+  }
+  .sponsor-cta{
+    gap: 10px;
+  }
+  .sponsor-cta .btn{
+    width: 100%;
+  }
+  .logos{
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .logo-box{
+    height: 76px;
+    border-radius: 14px;
+  }
+  .contact-card{
+    padding: 12px;
+  }
+  .footer{
+    padding: 20px 0;
+  }
+}
+
+@media (max-width: 520px){
+  .container{
+    width:min(var(--max), calc(100% - 24px));
+  }
+  .brand-mark{
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+  }
+  .brand-text strong{
+    font-size: 16px;
+  }
+  .brand-sub{
+    font-size: 10px;
+  }
+  .btn{
+    padding: 11px 13px;
+    border-radius: 12px;
+  }
+  .hero h1{
+    font-size: clamp(29px, 10vw, 38px);
+  }
+  .hero-ctas .btn{
+    flex: 1 1 100%;
+  }
+  .stats{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .stat{
+    padding: 9px 8px;
+  }
+  .countdown{
+    gap: 8px;
+    padding: 12px;
+  }
+  .cd-box{
+    border-radius: 14px;
+    padding: 10px 8px;
+  }
+  .cd-num{
+    font-size: 20px;
+  }
+  .card-row{
+    padding: 9px 12px;
+  }
+  .card-actions{
+    padding: 12px;
+  }
+  .lightbox{
+    padding: 10px;
+  }
+  .lightbox-close{
+    top: 10px;
+    right: 10px;
+  }
+  .logos{
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (pointer: coarse) and (max-width: 900px){
+  .btn,
+  .btn-small,
+  .chip,
+  .navmenu a{
+    min-height: 44px;
+  }
+}
