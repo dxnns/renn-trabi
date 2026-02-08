@@ -196,6 +196,32 @@
     const initialHint = formHint?.textContent || "";
     const formStartedAt = Date.now();
 
+    const openMailFallback = ({ name, company, email, phone, startWindow, interests, message }) => {
+      const to = "sponsoring@bembelracingteam.de";
+      const subject = encodeURIComponent(
+        `[Sponsoring] ${company || "Anfrage"} – ${state.selectedPlan} (${formatEUR(state.amount)} EUR)`
+      );
+      const body = encodeURIComponent(
+        [
+          `Name: ${name}`,
+          `Unternehmen: ${company}`,
+          `E-Mail: ${email}`,
+          `Telefon: ${phone || "-"}`,
+          `Paket: ${state.selectedPlan}`,
+          `Budget: ${formatEUR(state.amount)} EUR`,
+          `Startzeitraum: ${startWindow}`,
+          `Interessen: ${interests.length ? interests.join(", ") : "-"}`,
+          "",
+          "Nachricht:",
+          message || "-",
+          "",
+          "Gesendet über die Sponsoring-Anfrage-Seite.",
+        ].join("\n")
+      );
+
+      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+    };
+
     sponsorForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -247,8 +273,9 @@
           formHint.textContent = "Danke! Anfrage erfolgreich übermittelt.";
         }
       } catch {
+        openMailFallback({ name, company, email, phone, startWindow, interests, message });
         if (formHint) {
-          formHint.textContent = "Senden fehlgeschlagen. Bitte später erneut versuchen.";
+          formHint.textContent = "API aktuell nicht erreichbar. E-Mail-Client wird geöffnet.";
         }
       } finally {
         if (submitBtn instanceof HTMLButtonElement) {
