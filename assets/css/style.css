@@ -26,11 +26,30 @@ html{ scroll-behavior:smooth; }
 body{
   margin:0;
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: radial-gradient(1200px 600px at 20% 0%, rgba(255,106,0,.20), transparent 60%),
-              radial-gradient(900px 500px at 80% 20%, rgba(255,138,43,.12), transparent 60%),
+  background: radial-gradient(1240px 700px at 14% -6%, rgba(255,106,0,.30), transparent 62%),
+              radial-gradient(980px 560px at 88% 14%, rgba(255,138,43,.20), transparent 64%),
+              radial-gradient(760px 460px at 50% 88%, rgba(255,106,0,.14), transparent 72%),
               linear-gradient(180deg, var(--bg), var(--bg2));
+  background-size: 122% 122%, 116% 116%, 110% 110%, 100% 100%;
+  background-position: 12% -10%, 88% 14%, 50% 92%, center top;
+  animation: ambient-bg-shift 24s ease-in-out infinite alternate;
   color: var(--text);
   line-height:1.55;
+}
+
+@keyframes ambient-bg-shift{
+  0%{
+    background-position: 12% -10%, 88% 14%, 50% 92%, center top;
+    background-size: 122% 122%, 116% 116%, 110% 110%, 100% 100%;
+  }
+  50%{
+    background-position: 26% -2%, 72% 30%, 46% 80%, center top;
+    background-size: 132% 128%, 122% 120%, 118% 116%, 100% 100%;
+  }
+  100%{
+    background-position: 6% 10%, 94% 8%, 56% 98%, center top;
+    background-size: 116% 118%, 112% 112%, 106% 108%, 100% 100%;
+  }
 }
 
 img{ max-width:100%; display:block; }
@@ -1236,6 +1255,9 @@ input:focus, select:focus, textarea:focus{
 }
 
 @media (prefers-reduced-motion: reduce){
+  body{
+    animation:none;
+  }
   .hero-card{
     animation:none;
     opacity:1;

@@ -17,8 +17,28 @@ body{
   color:var(--text);
   font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   background:
-    radial-gradient(1200px 600px at 20% 0%, rgba(255,106,0,.18), transparent 60%),
+    radial-gradient(1180px 620px at 18% -8%, rgba(255,106,0,.24), transparent 62%),
+    radial-gradient(900px 520px at 92% 18%, rgba(255,138,43,.14), transparent 66%),
+    radial-gradient(620px 360px at 52% 92%, rgba(255,106,0,.10), transparent 72%),
     linear-gradient(180deg, var(--bg), var(--bg2));
+  background-size: 122% 122%, 114% 114%, 108% 108%, 100% 100%;
+  background-position: 16% -10%, 92% 18%, 52% 94%, center top;
+  animation: admin-ambient-bg-shift 24s ease-in-out infinite alternate;
+}
+
+@keyframes admin-ambient-bg-shift{
+  0%{
+    background-position: 16% -10%, 92% 18%, 52% 94%, center top;
+    background-size: 122% 122%, 114% 114%, 108% 108%, 100% 100%;
+  }
+  50%{
+    background-position: 28% -1%, 78% 30%, 48% 82%, center top;
+    background-size: 132% 128%, 120% 118%, 116% 114%, 100% 100%;
+  }
+  100%{
+    background-position: 10% 9%, 95% 12%, 58% 99%, center top;
+    background-size: 116% 118%, 110% 110%, 104% 106%, 100% 100%;
+  }
 }
 
 .container{
@@ -135,4 +155,10 @@ input, select{
   .filters{ grid-template-columns:1fr; }
   .lead-actions{ grid-template-columns:1fr; }
   .token-row{ grid-template-columns:1fr; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  body{
+    animation:none;
+  }
 }
