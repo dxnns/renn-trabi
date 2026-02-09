@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lead Inbox | Bembel Racing Team</title>
+  <title>Admin Workspace | Bembel Racing Team</title>
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet,max-image-preview:none" />
   <meta name="googlebot" content="noindex,nofollow,noarchive,nosnippet,max-image-preview:none" />
   <meta name="bingbot" content="noindex,nofollow,noarchive,nosnippet,max-image-preview:none" />
-  <meta name="theme-color" content="#0f1114" />
+  <meta name="theme-color" content="#f6f8fb" />
   <link rel="canonical" href="https://www.bembelracingteam.de/admin-leads.html" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,81 +17,196 @@
 </head>
 <body>
   <main class="container">
-    <header class="panel">
-      <h1>Lead Inbox</h1>
-      <p class="muted">Internes CRM-Light für Kontakt- und Sponsoring-Anfragen.</p>
-      <div class="token-row">
-        <label for="adminToken">Admin-Token</label>
-        <input id="adminToken" type="password" autocomplete="off" placeholder="ADMIN_TOKEN" />
-        <button id="connectBtn" class="btn" type="button">Verbinden</button>
+    <header class="panel hero-panel">
+      <div class="hero-headline">
+        <div>
+          <h1>Admin Workspace</h1>
+          <p class="muted">
+            Optimiert fuer eine statische GitHub-Pages-Website:
+            lokale Pflege von Race-Center-Inhalten, Export fuer Deployment und Mail-Workflow.
+          </p>
+        </div>
+        <span id="authBadge" class="badge is-offline">Gesperrt</span>
       </div>
-      <p id="sessionHint" class="hint muted">Nicht verbunden</p>
+      <p class="small muted">
+        Hinweis: Ohne Server-Backend ist dies ein <strong>lokales Admin-Tool im Browser</strong>.
+        Formularanfragen laufen weiterhin ueber den Mail-Client (`mailto:`).
+      </p>
     </header>
 
-    <section class="panel">
-      <div class="filters">
+    <section class="panel auth-panel">
+      <div class="section-head">
+        <h2>Anmeldung</h2>
+        <p id="authModeLabel" class="small muted">Erstanmeldung: lokale PIN einrichten</p>
+      </div>
+
+      <div class="auth-grid">
         <label>
-          Typ
-          <select id="typeFilter">
-            <option value="">Alle</option>
+          Admin PIN
+          <input id="adminPin" type="password" autocomplete="new-password" placeholder="Mindestens 8 Zeichen" />
+        </label>
+        <label id="pinConfirmRow">
+          PIN bestaetigen
+          <input id="adminPinConfirm" type="password" autocomplete="new-password" placeholder="PIN wiederholen" />
+        </label>
+        <div class="auth-actions">
+          <button id="authBtn" class="btn" type="button">PIN einrichten</button>
+          <button id="logoutBtn" class="btn btn-ghost" type="button" disabled>Abmelden</button>
+          <button id="resetAuthBtn" class="btn btn-ghost" type="button">PIN zuruecksetzen</button>
+        </div>
+      </div>
+
+      <p id="authHint" class="hint muted">Nicht angemeldet.</p>
+      <p id="authMeta" class="small muted">Session: inaktiv</p>
+    </section>
+
+    <section class="panel" data-admin-protected>
+      <div class="section-head">
+        <h2>Race Center Konfiguration</h2>
+        <p class="small muted">
+          Werte fuer "Status", "Letztes Update" und "Naechster Meilenstein".
+        </p>
+      </div>
+
+      <div class="config-grid">
+        <label>
+          Status
+          <input id="siteState" type="text" placeholder="In Vorbereitung" />
+        </label>
+        <label>
+          Letztes Update (Titel)
+          <input id="siteLastUpdateLabel" type="text" placeholder="Setup-Check abgeschlossen" />
+        </label>
+        <label>
+          Letztes Update (Zeitpunkt)
+          <input id="siteLastUpdateAt" type="datetime-local" />
+        </label>
+        <label>
+          Naechster Meilenstein
+          <input id="siteNextMilestone" type="text" placeholder="Transport, Pit-Setup und Abnahme" />
+        </label>
+      </div>
+
+      <div class="action-row">
+        <button id="saveSummaryBtn" class="btn" type="button">Zusammenfassung speichern</button>
+        <button id="resetOverrideBtn" class="btn btn-ghost" type="button">Lokale Overrides loeschen</button>
+        <button id="loadDefaultsBtn" class="btn btn-ghost" type="button">Standardwerte laden</button>
+      </div>
+      <p id="configHint" class="hint muted">Noch keine lokalen Aenderungen gespeichert.</p>
+    </section>
+
+    <section class="panel" data-admin-protected>
+      <div class="section-head">
+        <h2>Update Feed (manuell)</h2>
+        <p class="small muted">
+          Fuegt Race-Center-Updates hinzu, die lokal gespeichert und exportiert werden koennen.
+        </p>
+      </div>
+
+      <div class="feed-form-grid">
+        <label>
+          Kategorie
+          <select id="feedCategory">
+            <option value="technik">Technik</option>
+            <option value="rennen">Rennen</option>
+            <option value="team">Team</option>
+          </select>
+        </label>
+        <label>
+          Titel
+          <input id="feedTitle" type="text" placeholder="Setup-Check abgeschlossen" />
+        </label>
+        <label>
+          Zeitpunkt
+          <input id="feedAt" type="datetime-local" />
+        </label>
+        <label class="feed-text">
+          Text
+          <textarea id="feedBody" rows="4" placeholder="Kurzes Update fuer Race Center..."></textarea>
+        </label>
+      </div>
+
+      <div class="action-row">
+        <button id="addFeedBtn" class="btn" type="button">Update hinzufuegen</button>
+      </div>
+
+      <div id="feedList" class="feed-list"></div>
+    </section>
+
+    <section class="panel" data-admin-protected>
+      <div class="section-head">
+        <h2>JSON Export / Import</h2>
+        <p class="small muted">
+          Fuer Deployment auf GitHub Pages: JSON exportieren und in eure statische Datenquelle uebernehmen.
+        </p>
+      </div>
+
+      <label>
+        Konfiguration (JSON)
+        <textarea id="configJson" rows="12" spellcheck="false"></textarea>
+      </label>
+      <div class="action-row">
+        <button id="copyConfigBtn" class="btn" type="button">JSON kopieren</button>
+        <button id="downloadConfigBtn" class="btn btn-ghost" type="button">JSON herunterladen</button>
+        <button id="importConfigBtn" class="btn btn-ghost" type="button">JSON importieren</button>
+      </div>
+    </section>
+
+    <section class="panel" data-admin-protected>
+      <div class="section-head">
+        <h2>Mail Workflow</h2>
+        <p class="small muted">
+          Da Kontakt und Sponsoring ueber `mailto:` laufen, dient dieser Bereich als schnelle Antworthilfe.
+        </p>
+      </div>
+
+      <div class="action-row">
+        <button id="openContactInboxBtn" class="btn btn-ghost" type="button">Kontakt-Postfach oeffnen</button>
+        <button id="openSponsorInboxBtn" class="btn btn-ghost" type="button">Sponsoring-Postfach oeffnen</button>
+      </div>
+
+      <div class="mail-builder-grid">
+        <label>
+          Antworttyp
+          <select id="replyType">
             <option value="contact">Kontakt</option>
             <option value="sponsor">Sponsoring</option>
           </select>
         </label>
         <label>
-          Status
-          <select id="statusFilter">
-            <option value="">Alle</option>
-            <option value="new">new</option>
-            <option value="qualified">qualified</option>
-            <option value="contacted">contacted</option>
-            <option value="won">won</option>
-            <option value="lost">lost</option>
-            <option value="spam">spam</option>
-          </select>
+          Empfaenger Name
+          <input id="replyName" type="text" placeholder="Max Mustermann" />
         </label>
-        <label class="search">
-          Suche
-          <input id="searchInput" type="search" placeholder="Name, Firma, E-Mail, Nachricht ..." />
+        <label>
+          Empfaenger E-Mail
+          <input id="replyEmail" type="email" placeholder="max@example.com" />
         </label>
-        <button id="refreshBtn" class="btn btn-ghost" type="button">Aktualisieren</button>
+        <label>
+          Naechster Schritt
+          <input id="replyNextStep" type="text" placeholder="Kurzcall fuer Abstimmung vorschlagen" />
+        </label>
+        <label class="mail-text">
+          Zusatztext
+          <textarea id="replyMessage" rows="4" placeholder="Optionaler individueller Hinweis..."></textarea>
+        </label>
       </div>
-      <p id="statsLine" class="muted">Noch keine Daten geladen.</p>
+
+      <div class="action-row">
+        <button id="openReplyMailBtn" class="btn" type="button">Antwortmail oeffnen</button>
+      </div>
+      <p id="mailHint" class="hint muted">Noch keine Mailaktion ausgefuehrt.</p>
     </section>
 
-    <section class="panel">
-      <div id="leadList" class="lead-list"></div>
+    <section class="panel info-panel">
+      <h2>Moeglichkeiten im statischen Setup</h2>
+      <ul class="info-list">
+        <li>Website-Status lokal vorpflegen (Status, Letztes Update, Naechster Meilenstein)</li>
+        <li>Race-Center-Updates strukturiert erfassen und als JSON exportieren</li>
+        <li>Schnelle Mailantworten fuer Kontakt- und Sponsoring-Anfragen vorbereiten</li>
+        <li>Lokale Vorschau im Browser testen, bevor Daten ins Repo uebernommen werden</li>
+      </ul>
     </section>
   </main>
-
-  <template id="leadTemplate">
-    <article class="lead-card">
-      <header class="lead-head">
-        <div>
-          <h2 data-lead-title></h2>
-          <p class="muted small" data-lead-meta></p>
-        </div>
-        <span class="badge" data-lead-status></span>
-      </header>
-      <p class="small" data-lead-message></p>
-      <dl class="lead-details" data-lead-details></dl>
-      <div class="lead-actions">
-        <label>
-          Status setzen
-          <select data-status-next>
-            <option value="new">new</option>
-            <option value="qualified">qualified</option>
-            <option value="contacted">contacted</option>
-            <option value="won">won</option>
-            <option value="lost">lost</option>
-            <option value="spam">spam</option>
-          </select>
-        </label>
-        <input data-status-note type="text" placeholder="Notiz (optional)" />
-        <button class="btn btn-small" type="button" data-status-save>Speichern</button>
-      </div>
-    </article>
-  </template>
 
   <script src="assets/js/admin-leads.js" defer></script>
 </body>

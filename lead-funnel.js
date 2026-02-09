@@ -12,6 +12,36 @@ function createLeadFunnel(options) {
 
   const config = {
     adminToken: String(process.env.ADMIN_TOKEN || ""),
+    adminSessionCookieName: normalizeCookieName(
+      process.env.ADMIN_SESSION_COOKIE_NAME || "bembel_admin_session"
+    ),
+    adminSessionTtlMs: toInt(
+      process.env.ADMIN_SESSION_TTL_MS,
+      12 * 60 * 60_000,
+      60_000,
+      7 * 24 * 60 * 60_000
+    ),
+    adminSessionIdleMs: toInt(
+      process.env.ADMIN_SESSION_IDLE_MS,
+      45 * 60_000,
+      60_000,
+      24 * 60 * 60_000
+    ),
+    adminSessionMaxActive: toInt(process.env.ADMIN_SESSION_MAX_ACTIVE, 12, 1, 500),
+    adminSessionBindIp: process.env.ADMIN_SESSION_BIND_IP !== "false",
+    adminSessionBindUa: process.env.ADMIN_SESSION_BIND_UA !== "false",
+    adminCookieSecure:
+      process.env.ADMIN_COOKIE_SECURE === "true" || process.env.FORCE_HTTPS === "true",
+    adminAuthWindowMs: toInt(process.env.ADMIN_AUTH_WINDOW_MS, 15 * 60_000, 10_000, 86_400_000),
+    adminAuthMaxAttempts: toInt(process.env.ADMIN_AUTH_MAX_ATTEMPTS, 10, 1, 500),
+    adminAuthBlockMs: toInt(process.env.ADMIN_AUTH_BLOCK_MS, 30 * 60_000, 10_000, 86_400_000),
+    adminReadWindowMs: toInt(process.env.ADMIN_READ_WINDOW_MS, 60_000, 1_000, 3_600_000),
+    adminReadMaxRequests: toInt(process.env.ADMIN_READ_MAX_REQUESTS, 180, 10, 10_000),
+    adminReadBlockMs: toInt(process.env.ADMIN_READ_BLOCK_MS, 5 * 60_000, 1_000, 86_400_000),
+    adminWriteWindowMs: toInt(process.env.ADMIN_WRITE_WINDOW_MS, 60_000, 1_000, 3_600_000),
+    adminWriteMaxRequests: toInt(process.env.ADMIN_WRITE_MAX_REQUESTS, 90, 5, 10_000),
+    adminWriteBlockMs: toInt(process.env.ADMIN_WRITE_BLOCK_MS, 10 * 60_000, 1_000, 86_400_000),
+    adminFailedDelayMs: toInt(process.env.ADMIN_FAILED_DELAY_MS, 450, 0, 10_000),
     hashSalt: String(process.env.LEAD_HASH_SALT || "bembel-racing"),
     minFillMs: toInt(process.env.MIN_FORM_FILL_MS, 2_000, 0, 300_000),
     maxFormAgeMs: toInt(process.env.MAX_FORM_AGE_MS, 86_400_000, 60_000, 30 * 86_400_000),
@@ -42,6 +72,10 @@ function createLeadFunnel(options) {
   const sponsorPlans = new Set(["Bronze", "Silber", "Gold"]);
 
   const formRateBuckets = new Map();
+  const adminAuthBuckets = new Map();
+  const adminReadBuckets = new Map();
+  const adminWriteBuckets = new Map();
+  const adminSessions = new Map();
   let leadWriteQueue = Promise.resolve();
   let outboxWriteQueue = Promise.resolve();
 
@@ -78,14 +112,28 @@ function createLeadFunnel(options) {
     }
 
     if (pathname === "/api/admin/session") {
-      if (method !== "GET") {
+      if (method === "GET") {
+        return handleAdminSessionGet(req, res, clientIp);
+      }
+
+      if (method === "POST") {
+        return handleAdminSessionLogin(req, res, clientIp);
+      }
+
+      return sendJson(req, res, 405, { error: "method_not_allowed" }, {
+        Allow: "GET, POST, OPTIONS",
+        "Cache-Control": "no-store",
+      });
+    }
+
+    if (pathname === "/api/admin/session/logout") {
+      if (method !== "POST") {
         return sendJson(req, res, 405, { error: "method_not_allowed" }, {
-          Allow: "GET, OPTIONS",
+          Allow: "POST, OPTIONS",
           "Cache-Control": "no-store",
         });
       }
-      if (!requireAdminToken(req, res, config.adminToken)) return true;
-      return sendJson(req, res, 200, { ok: true, timestamp: new Date().toISOString() }, { "Cache-Control": "no-store" });
+      return handleAdminSessionLogout(req, res, clientIp);
     }
 
     if (pathname === "/api/admin/leads") {
@@ -95,7 +143,8 @@ function createLeadFunnel(options) {
           "Cache-Control": "no-store",
         });
       }
-      if (!requireAdminToken(req, res, config.adminToken)) return true;
+      const auth = requireAdminSession(req, res, clientIp, { accessType: "read" });
+      if (!auth) return true;
       return handleAdminList(req, res);
     }
 
@@ -107,8 +156,13 @@ function createLeadFunnel(options) {
           "Cache-Control": "no-store",
         });
       }
-      if (!requireAdminToken(req, res, config.adminToken)) return true;
-      return handleAdminPatch(req, res, patchMatch[1]);
+      const auth = requireAdminSession(req, res, clientIp, {
+        accessType: "write",
+        requireCsrf: true,
+        requireSameOrigin: true,
+      });
+      if (!auth) return true;
+      return handleAdminPatch(req, res, patchMatch[1], auth);
     }
 
     return false;
@@ -116,13 +170,11 @@ function createLeadFunnel(options) {
 
   function cleanup() {
     const now = Date.now();
-    for (const [key, bucket] of formRateBuckets) {
-      const staleWindow = now - bucket.windowStart > config.formLimitWindowMs * 3;
-      const blockExpired = bucket.blockedUntil <= now;
-      if (staleWindow && blockExpired) {
-        formRateBuckets.delete(key);
-      }
-    }
+    cleanupRateBuckets(formRateBuckets, config.formLimitWindowMs, now);
+    cleanupRateBuckets(adminAuthBuckets, config.adminAuthWindowMs, now);
+    cleanupRateBuckets(adminReadBuckets, config.adminReadWindowMs, now);
+    cleanupRateBuckets(adminWriteBuckets, config.adminWriteWindowMs, now);
+    pruneExpiredAdminSessions(now);
   }
 
   return {
@@ -162,6 +214,298 @@ function createLeadFunnel(options) {
     }
 
     return { allowed: true, retryAfter: 0 };
+  }
+
+  function checkAdminAccessRate(ip, accessType) {
+    if (accessType === "write") {
+      return checkRateBucket(
+        adminWriteBuckets,
+        ip,
+        config.adminWriteWindowMs,
+        config.adminWriteMaxRequests,
+        config.adminWriteBlockMs
+      );
+    }
+
+    return checkRateBucket(
+      adminReadBuckets,
+      ip,
+      config.adminReadWindowMs,
+      config.adminReadMaxRequests,
+      config.adminReadBlockMs
+    );
+  }
+
+  function ensureAdminConfigured(req, res) {
+    if (config.adminToken) return true;
+    sendJson(req, res, 503, { error: "admin_not_configured" }, { "Cache-Control": "no-store" });
+    return false;
+  }
+
+  function requireAdminSession(req, res, clientIp, options = {}) {
+    if (!ensureAdminConfigured(req, res)) return null;
+
+    const accessType = options.accessType === "write" ? "write" : "read";
+    const requireCsrf = options.requireCsrf === true;
+    const requireSameOrigin = options.requireSameOrigin === true;
+
+    const accessRate = checkAdminAccessRate(clientIp, accessType);
+    if (!accessRate.allowed) {
+      logSecurity("admin_rate_limited", `ip=${sanitize(clientIp)} access=${accessType}`);
+      sendJson(req, res, 429, { error: "too_many_admin_requests" }, {
+        "Retry-After": String(accessRate.retryAfter),
+        "Cache-Control": "no-store",
+      });
+      return null;
+    }
+
+    const sessionResult = readAdminSession(req, clientIp, { touch: true });
+    if (!sessionResult.ok) {
+      if (sessionResult.reason !== "missing_cookie") {
+        logSecurity(
+          "admin_session_invalid",
+          `ip=${sanitize(clientIp)} reason=${sanitize(sessionResult.reason)}`
+        );
+      }
+      sendJson(req, res, 401, { error: "unauthorized" }, {
+        "Cache-Control": "no-store",
+        "WWW-Authenticate": "Bearer realm=admin",
+        "Set-Cookie": buildClearedAdminSessionCookie(config),
+      });
+      return null;
+    }
+
+    const session = sessionResult.session;
+    if (requireSameOrigin && !isTrustedSameOriginRequest(req)) {
+      logSecurity("admin_origin_rejected", `ip=${sanitize(clientIp)} host=${sanitize(req.headers.host || "")}`);
+      sendJson(req, res, 403, { error: "forbidden_origin" }, { "Cache-Control": "no-store" });
+      return null;
+    }
+
+    if (requireCsrf) {
+      const providedCsrf = normalizeSingleLine(req.headers["x-admin-csrf"], 200);
+      if (!providedCsrf || !timingSafeEqualText(providedCsrf, session.csrfToken)) {
+        logSecurity("admin_csrf_rejected", `ip=${sanitize(clientIp)} sid=${sanitize(session.id)}`);
+        sendJson(req, res, 403, { error: "invalid_csrf" }, { "Cache-Control": "no-store" });
+        return null;
+      }
+    }
+
+    return {
+      session,
+      actor: `session:${session.id.slice(0, 8)}`,
+    };
+  }
+
+  async function handleAdminSessionGet(req, res, clientIp) {
+    const auth = requireAdminSession(req, res, clientIp, { accessType: "read" });
+    if (!auth) return true;
+
+    return sendJson(
+      req,
+      res,
+      200,
+      {
+        ok: true,
+        authenticated: true,
+        csrfToken: auth.session.csrfToken,
+        session: projectAdminSession(auth.session),
+      },
+      { "Cache-Control": "no-store" }
+    );
+  }
+
+  async function handleAdminSessionLogin(req, res, clientIp) {
+    if (!ensureAdminConfigured(req, res)) return true;
+    if (!isTrustedSameOriginRequest(req)) {
+      logSecurity("admin_login_origin_rejected", `ip=${sanitize(clientIp)} host=${sanitize(req.headers.host || "")}`);
+      return sendJson(req, res, 403, { error: "forbidden_origin" }, { "Cache-Control": "no-store" });
+    }
+
+    const authRate = checkRateBucket(
+      adminAuthBuckets,
+      clientIp,
+      config.adminAuthWindowMs,
+      config.adminAuthMaxAttempts,
+      config.adminAuthBlockMs
+    );
+    if (!authRate.allowed) {
+      logSecurity("admin_login_rate_limited", `ip=${sanitize(clientIp)} retry=${authRate.retryAfter}`);
+      return sendJson(req, res, 429, { error: "too_many_login_attempts" }, {
+        "Retry-After": String(authRate.retryAfter),
+        "Cache-Control": "no-store",
+      });
+    }
+
+    try {
+      const payload = await readJsonBody(req, maxBodyBytes);
+      const providedToken = normalizeSingleLine(payload.token, 600);
+
+      if (!providedToken || !timingSafeEqualText(providedToken, config.adminToken)) {
+        if (config.adminFailedDelayMs > 0) {
+          await sleep(config.adminFailedDelayMs);
+        }
+        logSecurity("admin_login_failed", `ip=${sanitize(clientIp)}`);
+        return sendJson(req, res, 401, { error: "unauthorized" }, {
+          "Cache-Control": "no-store",
+          "WWW-Authenticate": "Bearer realm=admin",
+        });
+      }
+
+      adminAuthBuckets.delete(clientIp);
+      pruneExpiredAdminSessions();
+      evictOldestAdminSessionsIfNeeded();
+
+      const session = createAdminSession(req, clientIp);
+      logSecurity("admin_login_success", `ip=${sanitize(clientIp)} sid=${sanitize(session.id)}`);
+
+      return sendJson(
+        req,
+        res,
+        200,
+        {
+          ok: true,
+          authenticated: true,
+          csrfToken: session.csrfToken,
+          session: projectAdminSession(session),
+        },
+        {
+          "Cache-Control": "no-store",
+          "Set-Cookie": buildAdminSessionCookie(config, session),
+        }
+      );
+    } catch (err) {
+      return sendApiError(req, res, err);
+    }
+  }
+
+  function handleAdminSessionLogout(req, res, clientIp) {
+    const auth = requireAdminSession(req, res, clientIp, {
+      accessType: "write",
+      requireCsrf: true,
+      requireSameOrigin: true,
+    });
+    if (!auth) return true;
+
+    adminSessions.delete(auth.session.id);
+    logSecurity("admin_logout", `ip=${sanitize(clientIp)} sid=${sanitize(auth.session.id)}`);
+    return sendJson(req, res, 200, { ok: true, authenticated: false }, {
+      "Cache-Control": "no-store",
+      "Set-Cookie": buildClearedAdminSessionCookie(config),
+    });
+  }
+
+  function createAdminSession(req, clientIp) {
+    const now = Date.now();
+    const createdAt = new Date(now).toISOString();
+    const expiresAtMs = now + config.adminSessionTtlMs;
+    const idleExpiresAtMs = now + config.adminSessionIdleMs;
+
+    const session = {
+      id: randomToken(24),
+      csrfToken: randomToken(24),
+      createdAt,
+      createdAtMs: now,
+      expiresAt: new Date(expiresAtMs).toISOString(),
+      expiresAtMs,
+      lastSeenAt: createdAt,
+      lastSeenAtMs: now,
+      idleExpiresAt: new Date(idleExpiresAtMs).toISOString(),
+      idleExpiresAtMs,
+      ipHash: hashSensitive(clientIp, config.hashSalt),
+      uaHash: hashSensitive(normalizeSingleLine(req.headers["user-agent"], 240), config.hashSalt),
+    };
+
+    adminSessions.set(session.id, session);
+    return session;
+  }
+
+  function projectAdminSession(session) {
+    return {
+      id: session.id.slice(0, 8),
+      createdAt: session.createdAt,
+      expiresAt: session.expiresAt,
+      idleExpiresAt: session.idleExpiresAt,
+      ipBound: config.adminSessionBindIp,
+      uaBound: config.adminSessionBindUa,
+    };
+  }
+
+  function readAdminSession(req, clientIp, options = {}) {
+    const cookies = parseCookieHeader(req.headers.cookie);
+    const rawSessionId = cookies[config.adminSessionCookieName];
+    const sessionId = normalizeSingleLine(rawSessionId, 200);
+    if (!sessionId) {
+      return { ok: false, reason: "missing_cookie" };
+    }
+
+    const session = adminSessions.get(sessionId);
+    if (!session) {
+      return { ok: false, reason: "unknown_session" };
+    }
+
+    const now = Date.now();
+    if (isAdminSessionExpired(session, now)) {
+      adminSessions.delete(session.id);
+      return { ok: false, reason: "expired_session" };
+    }
+
+    if (config.adminSessionBindIp) {
+      const currentIpHash = hashSensitive(clientIp, config.hashSalt);
+      if (!timingSafeEqualText(currentIpHash, session.ipHash)) {
+        adminSessions.delete(session.id);
+        return { ok: false, reason: "ip_mismatch" };
+      }
+    }
+
+    if (config.adminSessionBindUa) {
+      const currentUaHash = hashSensitive(
+        normalizeSingleLine(req.headers["user-agent"], 240),
+        config.hashSalt
+      );
+      if (!timingSafeEqualText(currentUaHash, session.uaHash)) {
+        adminSessions.delete(session.id);
+        return { ok: false, reason: "ua_mismatch" };
+      }
+    }
+
+    if (options.touch !== false) {
+      touchAdminSession(session, now);
+    }
+
+    return { ok: true, session };
+  }
+
+  function touchAdminSession(session, nowMs) {
+    session.lastSeenAtMs = nowMs;
+    session.lastSeenAt = new Date(nowMs).toISOString();
+    session.idleExpiresAtMs = nowMs + config.adminSessionIdleMs;
+    session.idleExpiresAt = new Date(session.idleExpiresAtMs).toISOString();
+  }
+
+  function isAdminSessionExpired(session, nowMs) {
+    return session.expiresAtMs <= nowMs || session.idleExpiresAtMs <= nowMs;
+  }
+
+  function pruneExpiredAdminSessions(nowMs = Date.now()) {
+    for (const [sessionId, session] of adminSessions) {
+      if (isAdminSessionExpired(session, nowMs)) {
+        adminSessions.delete(sessionId);
+      }
+    }
+  }
+
+  function evictOldestAdminSessionsIfNeeded() {
+    if (adminSessions.size < config.adminSessionMaxActive) return;
+
+    const sessionsByAge = Array.from(adminSessions.values()).sort(
+      (a, b) => a.lastSeenAtMs - b.lastSeenAtMs
+    );
+    while (adminSessions.size >= config.adminSessionMaxActive && sessionsByAge.length > 0) {
+      const staleSession = sessionsByAge.shift();
+      if (!staleSession) break;
+      adminSessions.delete(staleSession.id);
+    }
   }
 
   async function handleContactLead(req, res, clientIp) {
@@ -342,6 +686,12 @@ function createLeadFunnel(options) {
     const filterType = normalizeSingleLine(parsed.searchParams.get("type"), 40).toLowerCase();
     const filterStatus = normalizeSingleLine(parsed.searchParams.get("status"), 40).toLowerCase();
     const query = normalizeSingleLine(parsed.searchParams.get("q"), 120).toLowerCase();
+    const sortField = normalizeSingleLine(parsed.searchParams.get("sort"), 20).toLowerCase() === "updated"
+      ? "updated"
+      : "created";
+    const sortOrder = normalizeSingleLine(parsed.searchParams.get("order"), 20).toLowerCase() === "asc"
+      ? "asc"
+      : "desc";
 
     const limit = toInt(parsed.searchParams.get("limit"), 60, 1, 500);
     const offset = toInt(parsed.searchParams.get("offset"), 0, 0, 1_000_000);
@@ -359,24 +709,39 @@ function createLeadFunnel(options) {
       leads = leads.filter((lead) => leadMatchesQuery(lead, query));
     }
 
-    leads.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    const sortKey = sortField === "updated" ? "updatedAt" : "createdAt";
+    leads.sort((a, b) => {
+      const left = normalizeSingleLine(a?.[sortKey], 64);
+      const right = normalizeSingleLine(b?.[sortKey], 64);
+      return sortOrder === "asc" ? left.localeCompare(right) : right.localeCompare(left);
+    });
+
+    const pagedLeads = leads.slice(offset, offset + limit);
+    const hasMore = offset + limit < leads.length;
 
     return sendJson(req, res, 200, {
       ok: true,
       total: leads.length,
       offset,
       limit,
+      hasMore,
+      sort: {
+        field: sortField,
+        order: sortOrder,
+      },
       stats: buildLeadStats(store.leads),
-      leads: leads.slice(offset, offset + limit).map(projectLeadForAdmin),
+      filteredStats: buildLeadStats(leads),
+      leads: pagedLeads.map(projectLeadForAdmin),
     }, { "Cache-Control": "no-store" });
   }
 
-  async function handleAdminPatch(req, res, leadId) {
+  async function handleAdminPatch(req, res, leadId, auth) {
     try {
       const payload = await readJsonBody(req, maxBodyBytes);
       const nextStatus = normalizeSingleLine(payload.status, 40).toLowerCase();
       const note = normalizeMultiline(payload.note, 500);
-      const actor = normalizeSingleLine(payload.actor || "admin", 80) || "admin";
+      const actorHint = normalizeSingleLine(payload.actor, 80);
+      const actor = actorHint || auth?.actor || "admin";
 
       if (!leadStatuses.has(nextStatus)) {
         return sendJson(req, res, 400, { error: "invalid_status" }, { "Cache-Control": "no-store" });
@@ -507,37 +872,199 @@ module.exports = {
   createLeadFunnel,
 };
 
-function requireAdminToken(req, res, adminToken) {
-  if (!adminToken) {
-    sendJson(req, res, 503, { error: "admin_not_configured" }, { "Cache-Control": "no-store" });
-    return false;
+function checkRateBucket(bucketMap, key, windowMs, maxRequests, blockMs) {
+  const now = Date.now();
+  const normalizedKey = normalizeSingleLine(String(key || "unknown"), 120) || "unknown";
+  let bucket = bucketMap.get(normalizedKey);
+
+  if (!bucket) {
+    bucket = { windowStart: now, count: 0, blockedUntil: 0 };
+    bucketMap.set(normalizedKey, bucket);
   }
 
-  const provided = extractAdminToken(req);
-  if (!provided || !timingSafeEqualText(provided, adminToken)) {
-    sendJson(req, res, 401, { error: "unauthorized" }, {
-      "WWW-Authenticate": "Bearer realm=admin",
-      "Cache-Control": "no-store",
-    });
-    return false;
+  if (bucket.blockedUntil > now) {
+    return {
+      allowed: false,
+      retryAfter: Math.max(1, Math.ceil((bucket.blockedUntil - now) / 1000)),
+    };
   }
 
-  return true;
+  if (now - bucket.windowStart >= windowMs) {
+    bucket.windowStart = now;
+    bucket.count = 0;
+  }
+
+  bucket.count += 1;
+  if (bucket.count > maxRequests) {
+    bucket.blockedUntil = now + blockMs;
+    return {
+      allowed: false,
+      retryAfter: Math.max(1, Math.ceil(blockMs / 1000)),
+    };
+  }
+
+  return { allowed: true, retryAfter: 0 };
 }
 
-function extractAdminToken(req) {
-  const authHeader = String(req.headers.authorization || "").trim();
-  if (authHeader.toLowerCase().startsWith("bearer ")) {
-    return authHeader.slice(7).trim();
+function cleanupRateBuckets(bucketMap, windowMs, nowMs = Date.now()) {
+  for (const [key, bucket] of bucketMap) {
+    const staleWindow = nowMs - Number(bucket.windowStart || 0) > windowMs * 3;
+    const blockExpired = Number(bucket.blockedUntil || 0) <= nowMs;
+    if (staleWindow && blockExpired) {
+      bucketMap.delete(key);
+    }
   }
-  return String(req.headers["x-admin-token"] || "").trim();
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+function randomToken(bytes = 24) {
+  return crypto.randomBytes(bytes).toString("base64url");
+}
+
+function normalizeCookieName(value) {
+  const source = normalizeSingleLine(value, 80);
+  if (!source) return "bembel_admin_session";
+  if (!/^[a-zA-Z0-9_-]+$/.test(source)) return "bembel_admin_session";
+  return source;
+}
+
+function parseCookieHeader(cookieHeader) {
+  const result = Object.create(null);
+  const source = String(cookieHeader || "");
+  if (!source) return result;
+
+  const pairs = source.split(";");
+  for (const pair of pairs) {
+    const idx = pair.indexOf("=");
+    if (idx <= 0) continue;
+
+    const name = pair.slice(0, idx).trim();
+    if (!name) continue;
+    const rawValue = pair.slice(idx + 1).trim();
+    let decoded = rawValue;
+    try {
+      decoded = decodeURIComponent(rawValue);
+    } catch {
+      decoded = rawValue;
+    }
+    result[name] = decoded;
+  }
+
+  return result;
+}
+
+function serializeCookie(name, value, options = {}) {
+  const parts = [`${name}=${encodeURIComponent(String(value || ""))}`];
+  if (options.maxAge !== undefined) {
+    parts.push(`Max-Age=${Math.max(0, Math.floor(Number(options.maxAge) || 0))}`);
+  }
+  if (options.path) {
+    parts.push(`Path=${options.path}`);
+  }
+  if (options.httpOnly !== false) {
+    parts.push("HttpOnly");
+  }
+  if (options.secure) {
+    parts.push("Secure");
+  }
+  if (options.sameSite) {
+    parts.push(`SameSite=${options.sameSite}`);
+  }
+  return parts.join("; ");
+}
+
+function buildAdminSessionCookie(config, session) {
+  const maxAgeSec = Math.max(1, Math.floor(config.adminSessionTtlMs / 1000));
+  return serializeCookie(config.adminSessionCookieName, session.id, {
+    maxAge: maxAgeSec,
+    path: "/api/admin",
+    httpOnly: true,
+    secure: config.adminCookieSecure,
+    sameSite: "Strict",
+  });
+}
+
+function buildClearedAdminSessionCookie(config) {
+  return serializeCookie(config.adminSessionCookieName, "", {
+    maxAge: 0,
+    path: "/api/admin",
+    httpOnly: true,
+    secure: config.adminCookieSecure,
+    sameSite: "Strict",
+  });
+}
+
+function isTrustedSameOriginRequest(req) {
+  const forwardedProto = String(req.headers["x-forwarded-proto"] || "")
+    .split(",")[0]
+    .trim()
+    .toLowerCase();
+  const secureHint = req.socket?.encrypted === true || forwardedProto === "https";
+  const host = canonicalHostPortFromHostHeader(req.headers.host, secureHint);
+  if (!host) return false;
+
+  const origin = canonicalHostPortFromOrigin(req.headers.origin);
+  if (origin) {
+    return host === origin;
+  }
+
+  const referer = canonicalHostPortFromReferer(req.headers.referer);
+  if (referer) {
+    return host === referer;
+  }
+
+  return false;
+}
+
+function canonicalHostPortFromHostHeader(hostHeader, isSecure) {
+  const source = String(hostHeader || "").split(",")[0].trim();
+  if (!source) return "";
+
+  try {
+    const protocol = isSecure ? "https:" : "http:";
+    const parsed = new URL(`${protocol}//${source}`);
+    const port = parsed.port || (parsed.protocol === "https:" ? "443" : "80");
+    return `${parsed.hostname.toLowerCase()}:${port}`;
+  } catch {
+    return "";
+  }
+}
+
+function canonicalHostPortFromOrigin(originHeader) {
+  const source = normalizeSingleLine(originHeader, 300);
+  if (!source) return "";
+  try {
+    const parsed = new URL(source);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return "";
+    const port = parsed.port || (parsed.protocol === "https:" ? "443" : "80");
+    return `${parsed.hostname.toLowerCase()}:${port}`;
+  } catch {
+    return "";
+  }
+}
+
+function canonicalHostPortFromReferer(refererHeader) {
+  const source = normalizeSingleLine(refererHeader, 500);
+  if (!source) return "";
+  try {
+    const parsed = new URL(source);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return "";
+    const port = parsed.port || (parsed.protocol === "https:" ? "443" : "80");
+    return `${parsed.hostname.toLowerCase()}:${port}`;
+  } catch {
+    return "";
+  }
 }
 
 function timingSafeEqualText(a, b) {
-  const aBuf = Buffer.from(String(a));
-  const bBuf = Buffer.from(String(b));
-  if (aBuf.length !== bBuf.length) return false;
-  return crypto.timingSafeEqual(aBuf, bBuf);
+  const aDigest = crypto.createHash("sha256").update(String(a)).digest();
+  const bDigest = crypto.createHash("sha256").update(String(b)).digest();
+  return crypto.timingSafeEqual(aDigest, bDigest);
 }
 
 function sendJson(req, res, statusCode, payload, extraHeaders = {}) {

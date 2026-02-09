@@ -14,7 +14,14 @@ Server default: `http://0.0.0.0:8080`
 
 - Strict static request method policy (`GET`, `HEAD`, `OPTIONS`) with explicit API method allow-lists
 - API handling for lead intake (`POST /api/leads/contact`, `POST /api/leads/sponsor`)
-- Internal CRM-light API with token auth (`GET /api/admin/leads`, `PATCH /api/admin/leads/:id`)
+- Internal CRM-light API with hardened admin session auth:
+  - Login via `POST /api/admin/session` (token exchange)
+  - Session check via `GET /api/admin/session`
+  - Logout via `POST /api/admin/session/logout`
+  - Lead inbox via `GET /api/admin/leads`
+  - Lead status updates via `PATCH /api/admin/leads/:id`
+- HttpOnly admin session cookie (`SameSite=Strict`, configurable `Secure`) + CSRF header validation for mutating admin requests
+- Admin brute-force protection, separate read/write rate-limits, optional session binding to IP and User-Agent
 - Strict static file serving (no directory listing, path traversal blocked)
 - Rate limiting with temporary IP blocking
 - Additional form-specific rate limiting and spam heuristics
@@ -39,5 +46,7 @@ Server default: `http://0.0.0.0:8080`
 3. Set `TRUST_PROXY=true` only when proxy headers are trusted.
 4. Set `ALLOWED_HOSTS` to your exact production domain list.
 5. Keep Node.js updated (LTS).
-6. Set a strong `ADMIN_TOKEN`.
-7. Configure one auto-reply transport (`AUTO_REPLY_WEBHOOK_URL` or SMTP vars).
+6. Set a strong `ADMIN_TOKEN` and keep it out of logs/secrets leaks.
+7. Use HTTPS (`FORCE_HTTPS=true`) and enable secure admin cookie (`ADMIN_COOKIE_SECURE=true`).
+8. Keep default session hardening (`ADMIN_SESSION_BIND_IP=true`, `ADMIN_SESSION_BIND_UA=true`) unless your network setup requires relaxing it.
+9. Configure one auto-reply transport (`AUTO_REPLY_WEBHOOK_URL` or SMTP vars).

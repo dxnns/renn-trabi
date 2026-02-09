@@ -548,6 +548,7 @@
 
   const RACE_POLL_VOTES_KEY = "bembel_race_poll_votes";
   const RACE_REACTIONS_KEY = "bembel_race_reactions";
+  const RACE_CENTER_LOCAL_OVERRIDE_KEY = "bembel_race_center_override";
 
   // Manuelle Race-Center-Daten (statische GitHub-Pages-Version ohne Backend-API).
   // Neue Updates/Polls hier direkt ergänzen.
@@ -749,6 +750,7 @@
       state: String(summary.state || "").trim() || "In Vorbereitung",
       nextMilestone: String(summary.nextMilestone || "").trim() || "Naechster Meilenstein folgt",
       lastUpdateAt: String(summary.lastUpdateAt || latest?.at || "").trim(),
+      lastUpdateLabel: String(summary.lastUpdateLabel || "").trim(),
       lastUpdate: latest
         ? {
             id: latest.id,
@@ -761,10 +763,15 @@
   };
 
   const getManualRaceCenterData = () => {
-    const source =
+    const windowSource =
       window.BEMBEL_RACE_CENTER_DATA && typeof window.BEMBEL_RACE_CENTER_DATA === "object"
         ? window.BEMBEL_RACE_CENTER_DATA
-        : RACE_CENTER_MANUAL;
+        : null;
+    const localOverride = readJsonStorage(safeLocalStorage, RACE_CENTER_LOCAL_OVERRIDE_KEY, null);
+    const localSource = localOverride && typeof localOverride === "object" ? localOverride : null;
+
+    const source = windowSource || localSource || RACE_CENTER_MANUAL;
+    const sourceType = windowSource ? "window" : localSource ? "local" : "manual";
 
     const feedItems = Array.isArray(source.feed)
       ? source.feed.map(normalizeFeedItem).filter(Boolean).sort((a, b) => parseDate(a.at) - parseDate(b.at))
@@ -775,7 +782,7 @@
       : [];
 
     const summary = createSummaryFromFeed(source.summary, feedItems);
-    return { feedItems, polls, summary };
+    return { feedItems, polls, summary, sourceType };
   };
 
   const updateSummaryUi = (summary) => {
@@ -783,6 +790,7 @@
 
     const state = String(summary.state || "").trim();
     const nextMilestone = String(summary.nextMilestone || "").trim();
+    const lastUpdateLabel = String(summary.lastUpdateLabel || "").trim();
     const lastUpdate = summary.lastUpdate && typeof summary.lastUpdate === "object" ? summary.lastUpdate : null;
 
     if (state) {
@@ -794,7 +802,11 @@
     }
 
     if (raceLastUpdateEl) {
-      if (lastUpdate?.title) {
+      if (lastUpdateLabel) {
+        raceLastUpdateEl.textContent = summary.lastUpdateAt
+          ? `${lastUpdateLabel} • ${formatDateTime(summary.lastUpdateAt)}`
+          : lastUpdateLabel;
+      } else if (lastUpdate?.title) {
         raceLastUpdateEl.textContent = `${lastUpdate.title} • ${formatDateTime(lastUpdate.at)}`;
       } else if (summary.lastUpdateAt) {
         raceLastUpdateEl.textContent = formatDateTime(summary.lastUpdateAt);
@@ -951,12 +963,22 @@
     renderPolls();
 
     if (!raceCenterState.feed.length) {
-      setRaceFeedStatus("Lokales Race Center bereit. Updates in assets/js/main.js unter RACE_CENTER_MANUAL pflegen.");
+      if (data.sourceType === "local") {
+        setRaceFeedStatus("Race Center (lokaler Admin-Override) bereit. Noch keine Feed-Updates vorhanden.");
+      } else {
+        setRaceFeedStatus("Lokales Race Center bereit. Updates in assets/js/main.js unter RACE_CENTER_MANUAL pflegen.");
+      }
       return;
     }
 
     const latest = getLastManualUpdate(raceCenterState.feed);
-    setRaceFeedStatus(`Lokales Race Center • zuletzt ${formatDateTime(latest?.at)}.`);
+    const sourceLabel =
+      data.sourceType === "window"
+        ? "Race Center (window override)"
+        : data.sourceType === "local"
+          ? "Race Center (lokaler Admin-Override)"
+          : "Lokales Race Center";
+    setRaceFeedStatus(`${sourceLabel} • zuletzt ${formatDateTime(latest?.at)}.`);
   };
 
   const submitReaction = (postId, reactionKey) => {

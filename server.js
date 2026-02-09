@@ -281,7 +281,7 @@ async function handleRequest(req, res) {
       res.writeHead(304, {
         ETag: etag,
         "Last-Modified": fileStat.mtime.toUTCString(),
-        "Cache-Control": cacheControlFor(ext),
+        "Cache-Control": cacheControlFor(ext, pathname),
       });
       return res.end();
     }
@@ -290,7 +290,7 @@ async function handleRequest(req, res) {
     res.setHeader("Content-Length", String(fileStat.size));
     res.setHeader("ETag", etag);
     res.setHeader("Last-Modified", fileStat.mtime.toUTCString());
-    res.setHeader("Cache-Control", cacheControlFor(ext));
+    res.setHeader("Cache-Control", cacheControlFor(ext, pathname));
     if (ext === ".html") {
       res.setHeader("Content-Language", "de-DE");
     }
@@ -364,7 +364,7 @@ function applyCorsHeaders(req, res) {
     res.setHeader("Access-Control-Allow-Credentials", "true");
   }
   res.setHeader("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS, POST, PATCH");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Admin-Token");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Admin-Token, X-Admin-CSRF");
   res.setHeader("Access-Control-Max-Age", "86400");
   res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
 }
@@ -602,7 +602,10 @@ function makeWeakEtag(stat) {
   return `W/"${stat.size.toString(16)}-${Math.floor(stat.mtimeMs).toString(16)}"`;
 }
 
-function cacheControlFor(ext) {
+function cacheControlFor(ext, pathname = "") {
+  if (pathname === "/admin-leads" || pathname === "/admin-leads.html") {
+    return "no-store";
+  }
   if (ext === ".html" || ext === ".xml" || ext === ".txt" || ext === ".webmanifest") {
     return "no-cache, must-revalidate";
   }
