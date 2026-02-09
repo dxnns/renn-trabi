@@ -62,6 +62,7 @@ jobs:
         with:
           name: pages-dist
           path: dist/pages
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 2
 
