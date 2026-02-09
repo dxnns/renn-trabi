@@ -11,8 +11,10 @@
   <meta name="author" content="Bembel Racing Team" />
   <meta name="theme-color" content="#0f1114" />
   <meta name="format-detection" content="telephone=no" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
 
   <link rel="canonical" href="https://www.bembelracingteam.de/" />
+  <link rel="alternate" hreflang="de" href="https://www.bembelracingteam.de/" />
   <link rel="alternate" hreflang="de-DE" href="https://www.bembelracingteam.de/" />
   <link rel="alternate" hreflang="x-default" href="https://www.bembelracingteam.de/" />
 
@@ -22,15 +24,17 @@
   <meta property="og:description" content="Wir starten dieses Jahr beim Trabi-Rennen in Sachsen. Folge unserem Projekt!" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.bembelracingteam.de/" />
-  <meta property="og:image" content="https://www.bembelracingteam.de/assets/img/trabi.jpg" />
+  <meta property="og:image" content="https://www.bembelracingteam.de/assets/img/og-cover.jpg" />
+  <meta property="og:image:secure_url" content="https://www.bembelracingteam.de/assets/img/og-cover.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:alt" content="Renn-Trabi Enke 666 in Schwarz und Orange" />
-  <meta property="og:image:width" content="1536" />
-  <meta property="og:image:height" content="1024" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Bembel Racing Team – Renn-Trabi „Enke 666“" />
   <meta name="twitter:description" content="Kleines Rennteam, großer Spaß: News, Team, Fahrzeugdaten, Sponsoren und Kontakt." />
-  <meta name="twitter:image" content="https://www.bembelracingteam.de/assets/img/trabi.jpg" />
+  <meta name="twitter:image" content="https://www.bembelracingteam.de/assets/img/og-cover.jpg" />
   <meta name="twitter:image:alt" content="Renn-Trabi Enke 666 in Schwarz und Orange" />
 
   <script type="application/ld+json">
@@ -43,10 +47,20 @@
           "name": "Bembel Racing Team",
           "url": "https://www.bembelracingteam.de/",
           "image": "https://www.bembelracingteam.de/assets/img/trabi.jpg",
-          "logo": "https://www.bembelracingteam.de/assets/img/favicon.svg",
+          "logo": "https://www.bembelracingteam.de/assets/img/favicon-512x512.png",
           "description": "Kleines Rennteam rund um den Renn-Trabi Enke 666 mit Fokus auf das Trabi-Rennen in Sachsen 2026.",
           "email": "kontakt@bembelracingteam.de",
           "sport": "Motorsport",
+          "contactPoint": [
+            {
+              "@type": "ContactPoint",
+              "contactType": "customer support",
+              "email": "kontakt@bembelracingteam.de",
+              "availableLanguage": [
+                "de"
+              ]
+            }
+          ],
           "sameAs": [
             "https://www.instagram.com/bembelracingteam/"
           ]
@@ -116,8 +130,12 @@
   <link rel="stylesheet" href="assets/css/style.css" />
   <link rel="stylesheet" href="assets/css/mobile/shared.css" />
   <link rel="stylesheet" href="assets/css/mobile/index.css" />
+  <link rel="alternate" type="application/rss+xml" title="Bembel Racing Team Updates" href="https://www.bembelracingteam.de/feed.xml" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="sitemap" type="application/xml" href="sitemap.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png" />
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ff6a00' d='M50 5l45 25v40L50 95 5 70V30z'/%3E%3Cpath fill='%230f1114' d='M50 18l33 18v28L50 82 17 64V36z'/%3E%3C/svg%3E">
 </head>
@@ -283,7 +301,7 @@
           </div>
 
           <div class="about-team-cta reveal">
-            <a class="btn btn-team-pulse" href="team.html">
+            <a class="btn btn-team-pulse" href="/team.html">
               Team kennenlernen
               <span aria-hidden="true">→</span>
             </a>
@@ -490,7 +508,7 @@
 
         <div class="gallery">
           <button class="g-item reveal" type="button" data-lightbox="assets/img/trabi.jpg" aria-label="Bild öffnen">
-            <img src="assets/img/trabi.jpg" alt="Renn-Trabi in Schwarz/Orange (Seitenansicht)" loading="lazy">
+            <img src="assets/img/trabi.jpg" alt="Renn-Trabi in Schwarz/Orange (Seitenansicht)" loading="lazy" width="1536" height="1024">
           </button>
 
           <!-- Optional: weitere Bilder in assets/img/ ablegen -->
@@ -574,24 +592,24 @@
 
         <div class="sponsor-cta reveal">
           <p class="muted">Du willst individuell sponsoren statt starr im Paket? Perfekt.</p>
-          <a class="btn" href="sponsoring-anfrage.html">Anfragen</a>
+          <a class="btn" href="/sponsoring-anfrage.html">Anfragen</a>
         </div>
 
         <div class="logos reveal" aria-label="Sponsor Logos">
           <figure class="logo-box">
-            <img src="assets/img/sponsors/sponsor-01.webp" alt="Sponsor Logo 1" loading="eager" decoding="async" data-sponsor-logo />
+            <img src="assets/img/sponsors/sponsor-01.webp" alt="Sponsor Logo 1" loading="lazy" decoding="async" data-sponsor-logo />
             <figcaption class="logo-placeholder">sponsor-01.webp</figcaption>
           </figure>
           <figure class="logo-box">
-            <img src="assets/img/sponsors/sponsor-02.webp" alt="Sponsor Logo 2" loading="eager" decoding="async" data-sponsor-logo />
+            <img src="assets/img/sponsors/sponsor-02.webp" alt="Sponsor Logo 2" loading="lazy" decoding="async" data-sponsor-logo />
             <figcaption class="logo-placeholder">sponsor-02.webp</figcaption>
           </figure>
           <figure class="logo-box">
-            <img src="assets/img/sponsors/sponsor-03.webp" alt="Sponsor Logo 3" loading="eager" decoding="async" data-sponsor-logo />
+            <img src="assets/img/sponsors/sponsor-03.webp" alt="Sponsor Logo 3" loading="lazy" decoding="async" data-sponsor-logo />
             <figcaption class="logo-placeholder">sponsor-03.webp</figcaption>
           </figure>
           <figure class="logo-box">
-            <img src="assets/img/sponsors/sponsor-04.webp" alt="Sponsor Logo 4" loading="eager" decoding="async" data-sponsor-logo />
+            <img src="assets/img/sponsors/sponsor-04.webp" alt="Sponsor Logo 4" loading="lazy" decoding="async" data-sponsor-logo />
             <figcaption class="logo-placeholder">sponsor-04.webp</figcaption>
           </figure>
         </div>
@@ -675,7 +693,7 @@
 
       <div class="footer-links">
         <a class="link" href="#top">Nach oben</a>
-        <a class="link" href="team.html">Team</a>
+        <a class="link" href="/team.html">Team</a>
         <a class="link" href="#sponsors">Sponsoren</a>
       </div>
     </div>
@@ -693,7 +711,7 @@
         Wenn du uns trotzdem unterstützen möchtest, freuen wir uns sehr über Sponsoring.
       </p>
       <div class="join-modal-actions">
-        <a class="btn btn-small" href="sponsoring-anfrage.html">Sponsoring anfragen</a>
+        <a class="btn btn-small" href="/sponsoring-anfrage.html">Sponsoring anfragen</a>
         <button class="btn btn-small btn-ghost" type="button" data-joinmodal-close>Schließen</button>
       </div>
     </div>

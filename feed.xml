@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Bembel Racing Team Updates</title>
+    <link>https://www.bembelracingteam.de/</link>
+    <description>News und Updates rund um den Renn-Trabi Enke 666 und das Bembel Racing Team.</description>
+    <language>de-de</language>
+    <lastBuildDate>Mon, 09 Feb 2026 12:00:00 +0100</lastBuildDate>
+    <ttl>720</ttl>
+    <image>
+      <url>https://www.bembelracingteam.de/assets/img/og-cover.jpg</url>
+      <title>Bembel Racing Team</title>
+      <link>https://www.bembelracingteam.de/</link>
+    </image>
+
+    <item>
+      <title>Saison 2026: Trabi-Rennen Sachsen im Fokus</title>
+      <link>https://www.bembelracingteam.de/#race</link>
+      <description>Das Team bereitet den Rennstart 2026 in Sachsen vor. Setup, Roadmap und Race-Center werden laufend aktualisiert.</description>
+      <pubDate>Mon, 09 Feb 2026 09:00:00 +0100</pubDate>
+      <guid isPermaLink="true">https://www.bembelracingteam.de/#race</guid>
+    </item>
+
+    <item>
+      <title>Sponsoring-Anfrage jetzt direkt online</title>
+      <link>https://www.bembelracingteam.de/sponsoring-anfrage.html</link>
+      <description>Unternehmen koennen Sponsoring-Pakete waehlen, Budgets konfigurieren und direkt eine Anfrage senden.</description>
+      <pubDate>Mon, 09 Feb 2026 09:15:00 +0100</pubDate>
+      <guid isPermaLink="true">https://www.bembelracingteam.de/sponsoring-anfrage.html</guid>
+    </item>
+
+    <item>
+      <title>Teamprofil und Rollen online</title>
+      <link>https://www.bembelracingteam.de/team.html</link>
+      <description>Die Teamseite zeigt die Crew-Rollen und den Arbeitsmodus hinter Enke 666.</description>
+      <pubDate>Mon, 09 Feb 2026 09:30:00 +0100</pubDate>
+      <guid isPermaLink="true">https://www.bembelracingteam.de/team.html</guid>
+    </item>
+  </channel>
+</rss>

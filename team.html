@@ -11,8 +11,10 @@
   <meta name="author" content="Bembel Racing Team" />
   <meta name="theme-color" content="#0f1114" />
   <meta name="format-detection" content="telephone=no" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
 
   <link rel="canonical" href="https://www.bembelracingteam.de/team.html" />
+  <link rel="alternate" hreflang="de" href="https://www.bembelracingteam.de/team.html" />
   <link rel="alternate" hreflang="de-DE" href="https://www.bembelracingteam.de/team.html" />
   <link rel="alternate" hreflang="x-default" href="https://www.bembelracingteam.de/team.html" />
 
@@ -22,15 +24,17 @@
   <meta property="og:description" content="Das Team hinter dem Renn-Trabi Enke 666: Rollen, Aufgaben und Einblicke in unsere Arbeitsweise." />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://www.bembelracingteam.de/team.html" />
-  <meta property="og:image" content="https://www.bembelracingteam.de/assets/img/trabi.jpg" />
+  <meta property="og:image" content="https://www.bembelracingteam.de/assets/img/og-cover.jpg" />
+  <meta property="og:image:secure_url" content="https://www.bembelracingteam.de/assets/img/og-cover.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:alt" content="Renn-Trabi Enke 666 als Team-Visual" />
-  <meta property="og:image:width" content="1536" />
-  <meta property="og:image:height" content="1024" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Team | Bembel Racing Team" />
   <meta name="twitter:description" content="Lerne die Crew hinter Enke 666 kennen: Fahrer/in, Mechanik und Orga." />
-  <meta name="twitter:image" content="https://www.bembelracingteam.de/assets/img/trabi.jpg" />
+  <meta name="twitter:image" content="https://www.bembelracingteam.de/assets/img/og-cover.jpg" />
   <meta name="twitter:image:alt" content="Renn-Trabi Enke 666 als Team-Visual" />
 
   <script type="application/ld+json">
@@ -43,7 +47,7 @@
           "name": "Bembel Racing Team",
           "url": "https://www.bembelracingteam.de/",
           "image": "https://www.bembelracingteam.de/assets/img/trabi.jpg",
-          "logo": "https://www.bembelracingteam.de/assets/img/favicon.svg",
+          "logo": "https://www.bembelracingteam.de/assets/img/favicon-512x512.png",
           "email": "kontakt@bembelracingteam.de",
           "sport": "Motorsport"
         },
@@ -97,7 +101,12 @@
   <link rel="stylesheet" href="assets/css/team.css" />
   <link rel="stylesheet" href="assets/css/mobile/shared.css" />
   <link rel="stylesheet" href="assets/css/mobile/team.css" />
+  <link rel="alternate" type="application/rss+xml" title="Bembel Racing Team Updates" href="https://www.bembelracingteam.de/feed.xml" />
   <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="sitemap" type="application/xml" href="sitemap.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png" />
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
 </head>
 
@@ -106,7 +115,7 @@
 
   <header class="site-header" id="top">
     <div class="container header-inner">
-      <a class="brand" href="index.html" aria-label="Zur Startseite">
+      <a class="brand" href="/" aria-label="Zur Startseite">
         <span class="brand-mark" aria-hidden="true"></span>
         <span class="brand-text">
           <strong>Bembel Racing Team</strong>
@@ -120,10 +129,10 @@
           <span class="sr-only">Menü</span>
         </button>
         <div class="navmenu" id="navmenu">
-          <a href="index.html">Start</a>
-          <a href="index.html#about">Über uns</a>
-          <a href="sponsoring-anfrage.html">Sponsoring</a>
-          <a href="index.html#contact" class="btn btn-small">Kontakt</a>
+          <a href="/">Start</a>
+          <a href="/#about">Über uns</a>
+          <a href="/sponsoring-anfrage.html">Sponsoring</a>
+          <a href="/#contact" class="btn btn-small">Kontakt</a>
         </div>
       </nav>
     </div>
@@ -147,14 +156,14 @@
             </p>
 
             <div class="team-actions">
-              <a class="btn" href="index.html#contact">Mit uns Kontakt aufnehmen</a>
-              <a class="btn btn-ghost" href="index.html#about">Zurück zu „Über uns“</a>
+              <a class="btn" href="/#contact">Mit uns Kontakt aufnehmen</a>
+              <a class="btn btn-ghost" href="/#about">Zurück zu „Über uns“</a>
             </div>
           </div>
 
           <div class="team-image-wrap reveal">
             <figure class="team-figure">
-              <img src="assets/img/trabi.jpg" alt="Renn-Trabi Enke 666 als Team-Visual" loading="eager" />
+              <img src="assets/img/trabi.jpg" alt="Renn-Trabi Enke 666 als Team-Visual" loading="eager" width="1536" height="1024" />
               <figcaption>
                 Platzhalterbild: hier noch echtes Teamfoto einfügen
               </figcaption>
@@ -270,9 +279,9 @@
       </div>
 
       <div class="footer-links">
-        <a class="link" href="index.html">Startseite</a>
-        <a class="link" href="sponsoring-anfrage.html">Sponsoring</a>
-        <a class="link" href="index.html#contact">Kontakt</a>
+        <a class="link" href="/">Startseite</a>
+        <a class="link" href="/sponsoring-anfrage.html">Sponsoring</a>
+        <a class="link" href="/#contact">Kontakt</a>
       </div>
     </div>
   </footer>

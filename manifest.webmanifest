@@ -7,14 +7,39 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "categories": ["sports", "automotive", "events"],
   "background_color": "#0f1114",
   "theme_color": "#0f1114",
   "icons": [
+    {
+      "src": "/assets/img/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/img/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
     {
       "src": "/assets/img/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Team",
+      "short_name": "Team",
+      "url": "/team.html"
+    },
+    {
+      "name": "Sponsoring",
+      "short_name": "Sponsoring",
+      "url": "/sponsoring-anfrage.html"
     }
   ]
 }

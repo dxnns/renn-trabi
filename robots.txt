@@ -3,5 +3,7 @@ Allow: /
 Disallow: /admin-leads
 Disallow: /admin-leads.html
 Disallow: /api/
+Disallow: /404.html
 
 Sitemap: https://www.bembelracingteam.de/sitemap.xml
+Host: www.bembelracingteam.de
