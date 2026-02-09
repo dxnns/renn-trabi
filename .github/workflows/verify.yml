@@ -24,7 +24,7 @@ jobs:
   gate-checks:
     name: Gate - ${{ matrix.check_name }}
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ matrix.timeout_minutes }}
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
