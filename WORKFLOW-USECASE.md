@@ -18,11 +18,19 @@ Die Website wird als statische GitHub-Pages-Seite betrieben, mit einem klaren CI
    - Syntax-Checks
    - Referenz-Checks fuer lokale Assets/Links
    - Utility-Tests
+   - Runtime-Smoketest gegen den laufenden Server inkl. API-/Admin-Flows
+   - Artefakt-Build + Artefakt-Assertion
+   - Workflow-Lint (`actionlint`)
+   - PR-Dependency-Review (hohe CVEs)
    - Node-Matrix (20 + 22) fuer Zukunftssicherheit
 3. Nach dem Merge startet `pages-deploy`:
    - erneutes Verify-Gate
-   - Paketierung eines sauberen Pages-Artefakts (`dist/pages`)
-   - Deployment via `actions/deploy-pages`
+   - stufenweiser Deploy-Flow:
+     - Build-Artefakt erzeugen
+     - Artefakt separat validieren
+     - Pages-Artefakt paketieren
+     - Deployment via `actions/deploy-pages`
+     - Post-Deploy-Health-Checks mit Retry
 4. Danach prueft `pages-ops`:
    - taegliche Produktions-Health-Checks (inkl. `robots.txt`, `sitemap.xml`, `feed.xml`, `manifest.webmanifest`)
    - woechentlicher externer Link-Check (Lychee)
@@ -37,6 +45,9 @@ Ergebnis: Fehler werden vor dem Merge abgefangen, Deploys sind reproduzierbar, u
 - Timeout-Absicherungen gegen haengende Jobs
 - Node-Matrix fuer Kompatibilitaet
 - Deterministische Pages-Artefakt-Erzeugung inkl. `.nojekyll`
+- Artefakt-Integritaetspruefung vor Deploy
+- Server-Smoketest fuer kritische API-/Auth-Pfade
+- Workflow-Linting und PR-Dependency-Review
 - Taktisches Monitoring (Health taeglich, Link-Check woechentlich)
 - Manueller Trigger (`workflow_dispatch`) fuer Ad-hoc-Checks
 

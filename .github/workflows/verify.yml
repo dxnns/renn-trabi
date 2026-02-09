@@ -17,11 +17,59 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  CI: true
+
 jobs:
-  verify:
-    name: Verify (Node ${{ matrix.node-version }})
+  gate-checks:
+    name: Gate - ${{ matrix.check_name }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: ${{ matrix.timeout_minutes }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - check_name: Content Validate
+            timeout_minutes: 10
+            command: npm run content:validate
+          - check_name: Content Sync Drift
+            timeout_minutes: 10
+            command: npm run content:check
+          - check_name: Syntax Check
+            timeout_minutes: 10
+            command: npm run verify:syntax
+          - check_name: Reference Check
+            timeout_minutes: 10
+            command: npm run verify:refs
+          - check_name: Unit Tests
+            timeout_minutes: 10
+            command: npm run test:utils
+          - check_name: Server Smoke Test
+            timeout_minutes: 15
+            command: npm run ci:smoke:server
+          - check_name: Artifact Build+Assert
+            timeout_minutes: 10
+            command: npm run pages:pack && npm run pages:assert
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Run check
+        run: ${{ matrix.command }}
+
+  node-compat:
+    name: Node Compatibility (${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -41,5 +89,80 @@ jobs:
       - name: Install
         run: npm ci --no-audit --no-fund
 
-      - name: Verify
-        run: npm run verify
+      - name: Compatibility checks
+        run: npm run content:validate && npm run verify:syntax && npm run test:utils
+
+  workflow-lint:
+    name: Workflow Lint (actionlint)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate workflow definitions
+        uses: rhysd/actionlint@v1
+
+  dependency-review:
+    name: Dependency Review (PR)
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Dependency review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs:
+      - gate-checks
+      - node-compat
+      - workflow-lint
+      - dependency-review
+    timeout-minutes: 5
+    steps:
+      - name: Evaluate upstream job results
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          gate_checks="${{ needs.gate-checks.result }}"
+          node_compat="${{ needs.node-compat.result }}"
+          workflow_lint="${{ needs.workflow-lint.result }}"
+          dependency_review="${{ needs.dependency-review.result }}"
+
+          {
+            echo "### Verify Quality Gate"
+            echo ""
+            echo "- gate-checks: ${gate_checks}"
+            echo "- node-compat: ${node_compat}"
+            echo "- workflow-lint: ${workflow_lint}"
+            echo "- dependency-review: ${dependency_review}"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+          if [[ "${gate_checks}" != "success" ]]; then
+            echo "gate-checks must succeed."
+            exit 1
+          fi
+          if [[ "${node_compat}" != "success" ]]; then
+            echo "node-compat must succeed."
+            exit 1
+          fi
+          if [[ "${workflow_lint}" != "success" ]]; then
+            echo "workflow-lint must succeed."
+            exit 1
+          fi
+
+          if [[ "${dependency_review}" != "success" && "${dependency_review}" != "skipped" ]]; then
+            echo "dependency-review must be success or skipped."
+            exit 1
+          fi
+
+          echo "QUALITY_GATE_OK"
