@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- GENERATED:SEO:BEGIN -->
   <title>404 | Bembel Racing Team</title>
-  <meta name="description" content="Die angeforderte Seite wurde nicht gefunden. Zurueck zur Startseite des Bembel Racing Teams." />
+  <meta name="description" content="Die angeforderte Seite wurde nicht gefunden. Zurück zur Startseite des Bembel Racing Teams." />
   <meta name="robots" content="noindex,follow,noarchive" />
   <meta name="googlebot" content="noindex,follow,noarchive" />
   <meta name="author" content="Bembel Racing Team" />
@@ -21,7 +21,7 @@
   <meta property="og:locale" content="de_DE" />
   <meta property="og:site_name" content="Bembel Racing Team" />
   <meta property="og:title" content="404 | Bembel Racing Team" />
-  <meta property="og:description" content="Diese Seite existiert nicht. Zurueck zur Startseite." />
+  <meta property="og:description" content="Diese Seite existiert nicht. Zurück zur Startseite." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.bembelracingteam.de/404.html" />
   <meta property="og:image" content="https://www.bembelracingteam.de/assets/img/og-cover.jpg" />
@@ -33,7 +33,7 @@
   
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="404 | Bembel Racing Team" />
-  <meta name="twitter:description" content="Diese Seite existiert nicht. Zurueck zur Startseite." />
+  <meta name="twitter:description" content="Diese Seite existiert nicht. Zurück zur Startseite." />
   <meta name="twitter:image" content="https://www.bembelracingteam.de/assets/img/og-cover.jpg" />
   <meta name="twitter:image:alt" content="Renn-Trabi Enke 666 in Schwarz und Orange" />
   
@@ -110,6 +110,8 @@
     }
 
     .notfound-copy{
+      position: relative;
+      isolation: isolate;
       display: grid;
       gap: 14px;
       padding: clamp(22px, 3vw, 34px);
@@ -117,6 +119,37 @@
         linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,0) 42%),
         rgba(20,24,32,.72);
     }
+
+    /* .notfound-copy::before{
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          -20deg,
+          rgba(255,255,255,.05) 0 14px,
+          rgba(255,255,255,0) 14px 30px
+        );
+      opacity: .18;
+      mix-blend-mode: soft-light;
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    .notfound-copy::after{
+      content: "";
+      position: absolute;
+      left: -34%;
+      right: -34%;
+      bottom: 16px;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(255,106,0,0), rgba(255,106,0,.9), rgba(255,106,0,0));
+      filter: blur(.3px);
+      animation: notfound-sweep 5s linear infinite;
+      opacity: .64;
+      pointer-events: none;
+      z-index: -1;
+    } */
 
     .notfound-code{
       margin: 4px 0 0;
@@ -152,6 +185,10 @@
       gap: 10px;
       flex-wrap: wrap;
       margin-top: 2px;
+    }
+
+    .notfound-chips{
+      margin: 2px 0 2px;
     }
 
     .notfound-links{
@@ -212,6 +249,15 @@
       font-size: 14px;
     }
 
+    @keyframes notfound-sweep{
+      from{
+        transform: translateX(-16%);
+      }
+      to{
+        transform: translateX(16%);
+      }
+    }
+
     @media (max-width: 980px){
       .notfound-grid{
         grid-template-columns: 1fr;
@@ -243,18 +289,18 @@
         <span class="brand-mark" aria-hidden="true"></span>
         <span class="brand-text">
           <strong>Bembel Racing Team</strong>
-          <span class="brand-sub">Renn-Trabi "Enke 666"</span>
+          <span class="brand-sub">Renn-Trabi „Enke 666“</span>
         </span>
       </a>
 
       <nav class="nav" aria-label="Hauptnavigation">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navmenu">
           <span class="nav-toggle-lines" aria-hidden="true"></span>
-          <span class="sr-only">Menue</span>
+          <span class="sr-only">Menü</span>
         </button>
         <div class="navmenu" id="navmenu">
           <a href="index.html">Start</a>
-          <a href="index.html#about">Ueber uns</a>
+          <a href="index.html#about">Über uns</a>
           <a href="team.html">Team</a>
           <a href="sponsoring-anfrage.html" class="btn btn-small">Sponsoring</a>
         </div>
@@ -276,9 +322,15 @@
             <p class="notfound-code" aria-hidden="true">4<span>0</span>4</p>
             <h1>Diese Seite hat die Ideallinie verpasst.</h1>
             <p class="lead">
-              Der Link ist veraltet, falsch oder wurde verschoben. Ueber die folgenden Routen kommst du schnell wieder
+              Der Link ist veraltet, falsch oder wurde verschoben. Über die folgenden Routen kommst du schnell wieder
               auf Kurs.
             </p>
+
+            <!-- <div class="chips notfound-chips" aria-label="Schnellstatus">
+              <span class="chip">Routencheck aktiv</span>
+              <span class="chip">Pitlane-Navigation</span>
+              <span class="chip">Saison 2026</span>
+            </div> -->
 
             <div class="notfound-actions">
               <a class="btn" href="index.html">Zur Startseite</a>
@@ -300,7 +352,7 @@
             </figure>
 
             <div class="notfound-card-body">
-              <p class="muted small">Naechste sinnvolle Stops</p>
+              <p class="muted small">Nächste sinnvolle Stops</p>
               <ul class="spec-list notfound-spec-list">
                 <li>
                   <span>Startseite</span>
@@ -326,7 +378,7 @@
     <div class="container footer-inner">
       <div>
         <strong>Bembel Racing Team</strong>
-        <div class="muted small">© <span data-year></span> • Renn-Trabi "Enke 666"</div>
+        <div class="muted small">© <span data-year></span> • Renn-Trabi „Enke 666“</div>
         <div class="muted small"><a class="link" href="mailto:info@bembelracingteam.de">info@bembelracingteam.de</a></div>
       </div>
 

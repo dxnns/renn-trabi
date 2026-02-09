@@ -1,15 +1,33 @@
 name: verify
 
 on:
-  push:
-    branches:
-      - main
-      - master
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   verify:
+    name: Verify (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version:
+          - 20
+          - 22
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -17,11 +35,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: npm
 
       - name: Install
-        run: npm ci
+        run: npm ci --no-audit --no-fund
 
       - name: Verify
         run: npm run verify

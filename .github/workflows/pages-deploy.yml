@@ -1,0 +1,79 @@
+name: pages-deploy
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "*.html"
+      - "assets/**"
+      - "robots.txt"
+      - "sitemap.xml"
+      - "feed.xml"
+      - "manifest.webmanifest"
+      - "CNAME"
+      - "content/**"
+      - "scripts/content/**"
+      - "scripts/ci/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/pages-deploy.yml"
+      - ".github/workflows/verify.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: pages-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  verify:
+    uses: ./.github/workflows/verify.yml
+
+  build:
+    name: Build Pages Artifact
+    runs-on: ubuntu-latest
+    needs: verify
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Prepare artifact
+        run: npm run pages:pack
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/pages
+
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Write summary
+        run: |
+          echo "### GitHub Pages Deployment" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- URL: ${{ steps.deployment.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"

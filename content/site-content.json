@@ -488,18 +488,18 @@
     "notFound": {
       "path": "/404.html",
       "title": "404 | Bembel Racing Team",
-      "description": "Die angeforderte Seite wurde nicht gefunden. Zurueck zur Startseite des Bembel Racing Teams.",
+      "description": "Die angeforderte Seite wurde nicht gefunden. Zurück zur Startseite des Bembel Racing Teams.",
       "robots": "noindex,follow,noarchive",
       "googlebot": "noindex,follow,noarchive",
       "og": {
         "title": "404 | Bembel Racing Team",
-        "description": "Diese Seite existiert nicht. Zurueck zur Startseite.",
+        "description": "Diese Seite existiert nicht. Zurück zur Startseite.",
         "type": "website"
       },
       "twitter": {
         "card": "summary_large_image",
         "title": "404 | Bembel Racing Team",
-        "description": "Diese Seite existiert nicht. Zurueck zur Startseite."
+        "description": "Diese Seite existiert nicht. Zurück zur Startseite."
       },
       "jsonLd": {
         "@context": "https://schema.org",

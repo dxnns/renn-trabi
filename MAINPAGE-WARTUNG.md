@@ -23,4 +23,6 @@ Alle regelmäßig anzupassenden Inhalte der Mainpage liegen zentral in:
 
 1. Nur `assets/js/mainpage-config.js` bearbeiten.
 2. Im Browser prüfen, ob Countdown, Roadmap, Ticker und Race Center korrekt dargestellt sind.
-3. Deploy wie gewohnt.
+3. Änderungen per Branch + Pull Request einreichen und `verify` grün werden lassen.
+4. Nach Merge auf `main`/`master` deployt `pages-deploy` automatisch nach GitHub Pages.
+5. Laufende Produktionschecks erfolgen über `pages-ops` (täglich Health, wöchentlich Link-Check).
