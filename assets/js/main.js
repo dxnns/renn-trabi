@@ -441,7 +441,7 @@
   });
 
   // ---- Team join popup ----
-  const joinTrigger = document.querySelector("[data-team-join-trigger]");
+  const joinTriggers = $$("[data-team-join-trigger]");
   const joinModal = document.querySelector("[data-joinmodal]");
   const joinCloseButtons = $$("[data-joinmodal-close]");
   let lastFocusedEl = null;
@@ -471,8 +471,15 @@
     }
   };
 
-  if (joinTrigger && joinModal) {
-    joinTrigger.addEventListener("click", openJoinModal);
+  if (joinTriggers.length && joinModal) {
+    joinTriggers.forEach((trigger) => {
+      trigger.addEventListener("click", (e) => {
+        if (e.currentTarget instanceof HTMLAnchorElement) {
+          e.preventDefault();
+        }
+        openJoinModal();
+      });
+    });
 
     joinCloseButtons.forEach((btn) => {
       btn.addEventListener("click", closeJoinModal);

@@ -348,6 +348,11 @@ button, input, select, textarea{ font: inherit; }
   display:grid;
   gap:10px;
 }
+.card-actions-row{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:10px;
+}
 .card-summary{
   border-top:1px solid rgba(255,255,255,.06);
 }
