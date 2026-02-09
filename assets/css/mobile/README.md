@@ -8,7 +8,6 @@ This folder contains mobile-only overrides that are loaded **after** the existin
 - `index.css`: mobile tuning for `index.html`.
 - `team.css`: mobile tuning for `team.html`.
 - `sponsoring.css`: mobile tuning for `sponsoring-anfrage.html`.
-- `admin-leads.css`: mobile tuning for `admin-leads.html`.
 
 ## Rules
 

@@ -6,7 +6,7 @@ Geltungsbereich: Release auf GitHub Hosting (`www.bembelracingteam.de`)
 ## 1. SEO-Basis vor dem Release
 - [ ] Es wird geprüft, dass alle Canonical-URLs auf `https://www.bembelracingteam.de/...` verweisen.
 - [ ] Es wird geprüft, dass `sitemap.xml` nur indexierbare Seiten enthält.
-- [ ] Es wird geprüft, dass `robots.txt` die Sitemap referenziert und nicht indexierbare Bereiche sperrt (`/admin-leads`, `/api/`, `/404.html`).
+- [ ] Es wird geprüft, dass `robots.txt` die Sitemap referenziert und nicht indexierbare Bereiche sperrt (`/api/`, `/404.html`).
 - [ ] Es wird geprüft, dass `404.html` mit `noindex` ausgeliefert wird.
 - [ ] Es wird geprüft, dass alle Open-Graph- und Twitter-Bildpfade auf erreichbare Dateien zeigen (insbesondere `assets/img/og-cover.jpg`).
 - [ ] Es wird geprüft, dass alle referenzierten Bilddateien vorhanden sind (insbesondere Sponsor-Logos).
@@ -27,7 +27,7 @@ node --check server.js
 @'
 const fs=require('node:fs');
 const path=require('node:path');
-const pages=['index.html','team.html','sponsoring-anfrage.html','admin-leads.html','404.html'];
+const pages=['index.html','team.html','sponsoring-anfrage.html','404.html'];
 const attr=/\b(?:src|href)=\"([^\"]+)\"/g;
 const missing=[];
 for(const page of pages){

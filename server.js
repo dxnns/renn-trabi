@@ -68,8 +68,6 @@ const PAGE_ROUTES = new Map([
   ["/sponsoring-anfrage", "sponsoring-anfrage.html"],
   ["/sponsoring-anfrage.html", "sponsoring-anfrage.html"],
   ["/404.html", "404.html"],
-  ["/admin-leads", "admin-leads.html"],
-  ["/admin-leads.html", "admin-leads.html"],
 ]);
 const ROOT_FILE_ROUTES = new Map([
   ["/robots.txt", "robots.txt"],
@@ -375,11 +373,6 @@ function applyIndexingHeaders(pathname, res) {
     return;
   }
 
-  if (pathname === "/admin-leads" || pathname === "/admin-leads.html") {
-    res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive");
-    return;
-  }
-
   if (pathname === "/404.html") {
     res.setHeader("X-Robots-Tag", "noindex, follow, noarchive");
   }
@@ -603,9 +596,6 @@ function makeWeakEtag(stat) {
 }
 
 function cacheControlFor(ext, pathname = "") {
-  if (pathname === "/admin-leads" || pathname === "/admin-leads.html") {
-    return "no-store";
-  }
   if (ext === ".html" || ext === ".xml" || ext === ".txt" || ext === ".webmanifest") {
     return "no-cache, must-revalidate";
   }

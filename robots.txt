@@ -1,7 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /admin-leads
-Disallow: /admin-leads.html
 Disallow: /api/
 Disallow: /404.html
 
