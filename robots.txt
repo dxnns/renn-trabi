@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin-leads
+Disallow: /admin-leads.html
+Disallow: /api/
+
+Sitemap: https://www.bembelracingteam.de/sitemap.xml

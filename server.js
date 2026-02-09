@@ -70,6 +70,11 @@ const PAGE_ROUTES = new Map([
   ["/admin-leads", "admin-leads.html"],
   ["/admin-leads.html", "admin-leads.html"],
 ]);
+const ROOT_FILE_ROUTES = new Map([
+  ["/robots.txt", "robots.txt"],
+  ["/sitemap.xml", "sitemap.xml"],
+  ["/manifest.webmanifest", "manifest.webmanifest"],
+]);
 
 const MIME_TYPES = new Map([
   [".html", "text/html; charset=utf-8"],
@@ -77,6 +82,8 @@ const MIME_TYPES = new Map([
   [".js", "text/javascript; charset=utf-8"],
   [".json", "application/json; charset=utf-8"],
   [".txt", "text/plain; charset=utf-8"],
+  [".xml", "application/xml; charset=utf-8"],
+  [".webmanifest", "application/manifest+json; charset=utf-8"],
   [".svg", "image/svg+xml"],
   [".ico", "image/x-icon"],
   [".png", "image/png"],
@@ -226,6 +233,7 @@ async function handleRequest(req, res) {
       logSecurity("path_probe", `ip=${sanitize(clientIp)} path=${sanitize(pathname)}`);
       return sendError(req, res, 404, "Not Found", { "Cache-Control": "no-store" });
     }
+    applyIndexingHeaders(pathname, res);
 
     if (pathname.startsWith("/api/")) {
       const handled = await leadFunnel.handle(req, res, { method, pathname, clientIp });
@@ -281,6 +289,9 @@ async function handleRequest(req, res) {
     res.setHeader("ETag", etag);
     res.setHeader("Last-Modified", fileStat.mtime.toUTCString());
     res.setHeader("Cache-Control", cacheControlFor(ext));
+    if (ext === ".html") {
+      res.setHeader("Content-Language", "de-DE");
+    }
 
     if (method === "HEAD") {
       res.writeHead(200);
@@ -356,6 +367,17 @@ function applyCorsHeaders(req, res) {
   res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
 }
 
+function applyIndexingHeaders(pathname, res) {
+  if (pathname.startsWith("/api/")) {
+    res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive");
+    return;
+  }
+
+  if (pathname === "/admin-leads" || pathname === "/admin-leads.html") {
+    res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive");
+  }
+}
+
 function getAllowedCorsOrigin(origin) {
   if (!origin) return "";
   if (CORS_ALLOW_ALL) {
@@ -415,6 +437,10 @@ function parsePathname(rawUrl) {
 function resolveFilePath(pathname) {
   if (PAGE_ROUTES.has(pathname)) {
     return path.join(ROOT_DIR, PAGE_ROUTES.get(pathname));
+  }
+
+  if (ROOT_FILE_ROUTES.has(pathname)) {
+    return path.join(ROOT_DIR, ROOT_FILE_ROUTES.get(pathname));
   }
 
   if (!pathname.startsWith("/assets/")) {
@@ -570,7 +596,7 @@ function makeWeakEtag(stat) {
 }
 
 function cacheControlFor(ext) {
-  if (ext === ".html") {
+  if (ext === ".html" || ext === ".xml" || ext === ".txt" || ext === ".webmanifest") {
     return "no-cache, must-revalidate";
   }
   return "public, max-age=86400, stale-while-revalidate=3600";

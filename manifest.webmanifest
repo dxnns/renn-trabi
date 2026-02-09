@@ -1,0 +1,20 @@
+{
+  "id": "/",
+  "name": "Bembel Racing Team - Renn-Trabi Enke 666",
+  "short_name": "Bembel Racing",
+  "description": "Teamseite, Renn-Updates und Sponsoring-Anfrage rund um den Renn-Trabi Enke 666.",
+  "lang": "de-DE",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f1114",
+  "theme_color": "#0f1114",
+  "icons": [
+    {
+      "src": "/assets/img/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

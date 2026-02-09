@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://www.bembelracingteam.de/</loc>
+    <lastmod>2026-02-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://www.bembelracingteam.de/assets/img/trabi.jpg</image:loc>
+      <image:title>Bembel Racing Team Renn-Trabi Enke 666</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.bembelracingteam.de/team.html</loc>
+    <lastmod>2026-02-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.bembelracingteam.de/assets/img/trabi.jpg</image:loc>
+      <image:title>Teamseite Bembel Racing Team</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.bembelracingteam.de/sponsoring-anfrage.html</loc>
+    <lastmod>2026-02-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://www.bembelracingteam.de/assets/img/trabi.jpg</image:loc>
+      <image:title>Sponsoring-Anfrage Bembel Racing Team</image:title>
+    </image:image>
+  </url>
+</urlset>
