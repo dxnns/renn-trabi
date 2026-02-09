@@ -3,76 +3,35 @@
    ========================= */
 
 (() => {
-  const $ = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const uiCore = window.BEMBEL_UI_CORE || {};
+  const $ = typeof uiCore.q === "function"
+    ? uiCore.q
+    : (sel, root = document) => root.querySelector(sel);
+  const $$ = typeof uiCore.qq === "function"
+    ? uiCore.qq
+    : (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const reduceMotion = typeof uiCore.getReduceMotion === "function"
+    ? uiCore.getReduceMotion()
+    : window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // ---- Section build on scroll ----
-  const sections = $$("main > section");
-  if (sections.length) {
-    const viewportH = window.innerHeight || document.documentElement.clientHeight;
-    const pendingSections = [];
-
-    sections.forEach((section) => {
-      section.classList.add("scroll-section");
-      const rect = section.getBoundingClientRect();
-      const initiallyVisible = rect.top < viewportH * 0.88 && rect.bottom > 0;
-      if (initiallyVisible || reduceMotion) {
-        section.classList.add("is-built");
-      } else {
-        pendingSections.push(section);
-      }
+  // ---- Section build + reveal (shared core) ----
+  if (typeof uiCore.initializeSectionBuildAndReveal === "function") {
+    uiCore.initializeSectionBuildAndReveal({
+      delayStep: 55,
+      delayCap: 220,
     });
-
-    if (!reduceMotion && pendingSections.length && "IntersectionObserver" in window) {
-      const sectionIO = new IntersectionObserver((entries, observer) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-built");
-          observer.unobserve(entry.target);
-        });
-      }, { threshold: 0.18, rootMargin: "0px 0px -8% 0px" });
-
-      pendingSections.forEach((section) => sectionIO.observe(section));
-    } else {
-      pendingSections.forEach((section) => section.classList.add("is-built"));
-    }
-  }
-
-  // ---- Reveal cards/items on scroll ----
-  const sectionArticles = $$("main > section article[class]");
-  sectionArticles.forEach((article) => {
-    article.classList.add("article-fx", "reveal");
-  });
-
-  const revealEls = $$(".reveal");
-  sections.forEach((section) => {
-    $$(".reveal", section).forEach((el, idx) => {
-      el.style.setProperty("--reveal-delay", `${Math.min(idx * 55, 220)}ms`);
-    });
-  });
-
-  if (reduceMotion || !("IntersectionObserver" in window)) {
-    revealEls.forEach((el) => el.classList.add("is-visible"));
-  } else {
-    const revealIO = new IntersectionObserver((entries, observer) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-visible");
-        observer.unobserve(entry.target);
-      });
-    }, { threshold: 0.12, rootMargin: "0px 0px -5% 0px" });
-
-    revealEls.forEach((el) => revealIO.observe(el));
   }
 
   const planCards = $$(".plan-card");
   const amountRange = $("[data-amount-range]");
   const amountValue = $("[data-amount-value]");
   const impactTag = $("[data-impact-tag]");
-  const amountChips = $$("[data-amount-chip]");
+  const chipRow = $(".chip-row");
   const fundingBar = $("[data-funding-bar]");
   const fundingValue = $("[data-funding-value]");
+  const metricRatioEl = $("[data-metric-format='ratio']");
+  const metricPercentEl = $("[data-metric-format='percent']");
+  const metricSeasonEl = $("[data-metric-format='number']");
 
   const summaryPlan = $("[data-summary-plan]");
   const summaryRecommended = $("[data-summary-recommended]");
@@ -85,28 +44,159 @@
   const selectedAmountInput = $("#selectedAmount");
   const sponsorForm = $("#sponsorForm");
 
-  const state = {
-    selectedPlan: "Bronze",
-    amount: Number(amountRange?.value || 1200),
+  const asObject = (value) => (value && typeof value === "object" && !Array.isArray(value) ? value : {});
+  const asArray = (value) => (Array.isArray(value) ? value : []);
+  const toInt = (value, fallback) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? Math.round(parsed) : fallback;
   };
 
-  const planMeta = {
-    Bronze: {
-      minAmount: 450,
-      visibility: "Website + Update-Erwähnung",
-      note: "Solider Einstieg mit klarer Sichtbarkeit in der Community.",
+  const DEFAULT_SPONSORING_CONFIG = {
+    mailTo: "sponsoring@bembelracingteam.de",
+    defaultPlan: "Bronze",
+    defaultAmount: 1200,
+    amountRange: {
+      min: 300,
+      max: 5000,
+      step: 50,
     },
-    Silber: {
-      minAmount: 1100,
-      visibility: "Website + Fahrzeugbereich + Content",
-      note: "Ausgewogene Mischung aus Reichweite und Markenpräsenz.",
+    amountChips: [600, 1200, 2500, 4000],
+    planMeta: {
+      Bronze: {
+        minAmount: 450,
+        visibility: "Website + Update-Erwähnung",
+        note: "Solider Einstieg mit klarer Sichtbarkeit in der Community.",
+      },
+      Silber: {
+        minAmount: 1100,
+        visibility: "Website + Fahrzeugbereich + Content",
+        note: "Ausgewogene Mischung aus Reichweite und Markenpräsenz.",
+      },
+      Gold: {
+        minAmount: 2200,
+        visibility: "Prominente Platzierung + Co-Branding",
+        note: "Maximale Sichtbarkeit und enge Zusammenarbeit.",
+      },
     },
-    Gold: {
-      minAmount: 2200,
-      visibility: "Prominente Platzierung + Co-Branding",
-      note: "Maximale Sichtbarkeit und enge Zusammenarbeit.",
+    metrics: {
+      partnerSlots: { used: 7, total: 12 },
+      budgetPercent: 68,
+      targetSeason: 2026,
+      fundingPercent: 68,
+    },
+    impactRules: {
+      starterMax: 899,
+      goodMax: 2199,
+      strongMax: 3499,
+      slotsDivisor: 150,
+      slotsMin: 3,
+      tags: {
+        starter: "Starter-Sichtbarkeit",
+        good: "Gute Strecken-Sichtbarkeit",
+        strong: "Starker Markenauftritt",
+        headline: "Headline-Partner Potenzial",
+      },
     },
   };
+
+  const inputConfig = asObject(window.BEMBEL_SPONSORING_CONFIG);
+  const inputRange = asObject(inputConfig.amountRange);
+  const inputPlanMeta = asObject(inputConfig.planMeta);
+  const inputMetrics = asObject(inputConfig.metrics);
+  const inputPartnerSlots = asObject(inputMetrics.partnerSlots);
+  const inputImpactRules = asObject(inputConfig.impactRules);
+  const inputImpactTags = asObject(inputImpactRules.tags);
+
+  const siteConfig = {
+    ...DEFAULT_SPONSORING_CONFIG,
+    ...inputConfig,
+    amountRange: {
+      ...DEFAULT_SPONSORING_CONFIG.amountRange,
+      ...inputRange,
+    },
+    amountChips: asArray(inputConfig.amountChips).length
+      ? asArray(inputConfig.amountChips)
+      : DEFAULT_SPONSORING_CONFIG.amountChips,
+    planMeta: {
+      ...DEFAULT_SPONSORING_CONFIG.planMeta,
+      ...inputPlanMeta,
+    },
+    metrics: {
+      ...DEFAULT_SPONSORING_CONFIG.metrics,
+      ...inputMetrics,
+      partnerSlots: {
+        ...DEFAULT_SPONSORING_CONFIG.metrics.partnerSlots,
+        ...inputPartnerSlots,
+      },
+    },
+    impactRules: {
+      ...DEFAULT_SPONSORING_CONFIG.impactRules,
+      ...inputImpactRules,
+      tags: {
+        ...DEFAULT_SPONSORING_CONFIG.impactRules.tags,
+        ...inputImpactTags,
+      },
+    },
+  };
+
+  if (amountRange) {
+    amountRange.min = String(toInt(siteConfig.amountRange.min, DEFAULT_SPONSORING_CONFIG.amountRange.min));
+    amountRange.max = String(toInt(siteConfig.amountRange.max, DEFAULT_SPONSORING_CONFIG.amountRange.max));
+    amountRange.step = String(Math.max(1, toInt(siteConfig.amountRange.step, DEFAULT_SPONSORING_CONFIG.amountRange.step)));
+    amountRange.value = String(toInt(siteConfig.defaultAmount, DEFAULT_SPONSORING_CONFIG.defaultAmount));
+  }
+
+  const planNames = ["Bronze", "Silber", "Gold"];
+  planCards.forEach((card) => {
+    const planName = card.getAttribute("data-plan") || "";
+    const meta = siteConfig.planMeta[planName];
+    if (!meta) return;
+    card.setAttribute("data-visibility", String(meta.visibility || ""));
+    card.setAttribute("data-note", String(meta.note || ""));
+    const rangeEl = card.querySelector(".plan-range");
+    if (rangeEl) {
+      rangeEl.textContent = `ab ${toInt(meta.minAmount, 0)} EUR`;
+    }
+  });
+
+  if (chipRow) {
+    chipRow.innerHTML = siteConfig.amountChips
+      .map((amount) => `<button type="button" class="chip" data-amount-chip="${toInt(amount, 0)}">${toInt(amount, 0)} EUR</button>`)
+      .join("");
+  }
+  let amountChips = $$("[data-amount-chip]");
+
+  if (metricRatioEl) {
+    const used = toInt(siteConfig.metrics.partnerSlots.used, 0);
+    const total = Math.max(1, toInt(siteConfig.metrics.partnerSlots.total, 1));
+    metricRatioEl.setAttribute("data-metric-target", String(used));
+    metricRatioEl.setAttribute("data-metric-total", String(total));
+    metricRatioEl.textContent = `${used}/${total}`;
+  }
+  if (metricPercentEl) {
+    const budgetPercent = Math.max(0, Math.min(100, toInt(siteConfig.metrics.budgetPercent, 0)));
+    metricPercentEl.setAttribute("data-metric-target", String(budgetPercent));
+    metricPercentEl.textContent = `${budgetPercent}%`;
+  }
+  if (metricSeasonEl) {
+    const targetSeason = toInt(siteConfig.metrics.targetSeason, DEFAULT_SPONSORING_CONFIG.metrics.targetSeason);
+    metricSeasonEl.setAttribute("data-metric-target", String(targetSeason));
+    metricSeasonEl.textContent = String(targetSeason);
+  }
+  if (fundingBar) {
+    const fundingPercent = Math.max(0, Math.min(100, toInt(siteConfig.metrics.fundingPercent, DEFAULT_SPONSORING_CONFIG.metrics.fundingPercent)));
+    fundingBar.setAttribute("data-target", String(fundingPercent));
+  }
+
+  const resolvedDefaultPlan = planNames.includes(siteConfig.defaultPlan)
+    ? siteConfig.defaultPlan
+    : DEFAULT_SPONSORING_CONFIG.defaultPlan;
+  const state = {
+    selectedPlan: resolvedDefaultPlan,
+    amount: Number(amountRange?.value || siteConfig.defaultAmount || DEFAULT_SPONSORING_CONFIG.defaultAmount),
+  };
+
+  const planMeta = siteConfig.planMeta;
 
   const formatEUR = (value) =>
     new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 }).format(value);
@@ -122,9 +212,9 @@
   };
 
   const normalizeAmount = (value) => {
-    const min = Number(amountRange?.min || 300);
-    const max = Number(amountRange?.max || 5000);
-    const step = Number(amountRange?.step || 50);
+    const min = Number(amountRange?.min || DEFAULT_SPONSORING_CONFIG.amountRange.min);
+    const max = Number(amountRange?.max || DEFAULT_SPONSORING_CONFIG.amountRange.max);
+    const step = Number(amountRange?.step || DEFAULT_SPONSORING_CONFIG.amountRange.step);
     const raw = Number(value);
     const safe = Number.isFinite(raw) ? raw : min;
     const clamped = Math.max(min, Math.min(max, safe));
@@ -132,14 +222,17 @@
   };
 
   const getImpactTag = (amount) => {
-    if (amount < 900) return "Starter-Sichtbarkeit";
-    if (amount < 2200) return "Gute Strecken-Sichtbarkeit";
-    if (amount < 3500) return "Starker Markenauftritt";
-    return "Headline-Partner Potenzial";
+    if (amount <= Number(siteConfig.impactRules.starterMax)) return String(siteConfig.impactRules.tags.starter);
+    if (amount <= Number(siteConfig.impactRules.goodMax)) return String(siteConfig.impactRules.tags.good);
+    if (amount <= Number(siteConfig.impactRules.strongMax)) return String(siteConfig.impactRules.tags.strong);
+    return String(siteConfig.impactRules.tags.headline);
   };
 
   const getImpactDetail = (amount) => {
-    const slots = Math.max(3, Math.round(amount / 150));
+    const slots = Math.max(
+      Number(siteConfig.impactRules.slotsMin) || 3,
+      Math.round(amount / (Number(siteConfig.impactRules.slotsDivisor) || 150))
+    );
     return `ca. ${slots} Setup-Slots abgesichert`;
   };
 
@@ -231,7 +324,7 @@
 
   // ---- Hero metrics + funding animation ----
   const heroMetrics = $$("[data-metric-target]");
-  const fundingTarget = Number(fundingBar?.getAttribute("data-target")) || 68;
+  const fundingTarget = Number(fundingBar?.getAttribute("data-target")) || Number(siteConfig.metrics.fundingPercent) || 68;
 
   const renderMetricValue = (el, value) => {
     const target = Number(el.getAttribute("data-metric-target")) || 0;
@@ -314,7 +407,7 @@
     const submitBtn = sponsorForm.querySelector("button[type='submit']");
     const initialHint = formHint?.textContent || "";
     const openMailClient = ({ name, company, email, phone, startWindow, interests, message }) => {
-      const to = "sponsoring@bembelracingteam.de";
+      const to = String(siteConfig.mailTo || DEFAULT_SPONSORING_CONFIG.mailTo);
       const subject = encodeURIComponent(
         `[Sponsoring] ${company || "Anfrage"} – ${state.selectedPlan} (${formatEUR(state.amount)} EUR)`
       );

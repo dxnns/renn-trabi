@@ -3,6 +3,8 @@
    ========================= */
 
 (() => {
+  const uiCore = window.BEMBEL_UI_CORE || {};
+
   // ---- Mainpage config ----
   const asObject = (value) => (value && typeof value === "object" && !Array.isArray(value) ? value : {});
   const asArray = (value) => (Array.isArray(value) ? value : []);
@@ -110,11 +112,18 @@
   };
 
   // ---- Helpers ----
-  const $ = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const $ = typeof uiCore.q === "function"
+    ? uiCore.q
+    : (sel, root = document) => root.querySelector(sel);
+  const $$ = typeof uiCore.qq === "function"
+    ? uiCore.qq
+    : (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const escapeHtml = (s) =>
     String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
   const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+  const reduceMotion = typeof uiCore.getReduceMotion === "function"
+    ? uiCore.getReduceMotion()
+    : window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const RACE_START_LOCAL = toText(siteConfig.race.startLocal, DEFAULT_MAINPAGE_CONFIG.race.startLocal);
   const RACE_LOCATION = toText(siteConfig.race.location, DEFAULT_MAINPAGE_CONFIG.race.location);
   const RACE_STATUS_UPCOMING = toText(siteConfig.race.statusUpcoming, DEFAULT_MAINPAGE_CONFIG.race.statusUpcoming);
@@ -279,8 +288,6 @@
   const yEl = $("[data-year]");
   if (yEl) yEl.textContent = String(y);
 
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
   // ---- Back to top links ----
   const backToTopLinks = $$('a[href="#top"]');
   backToTopLinks.forEach((linkEl) => {
@@ -293,63 +300,17 @@
     });
   });
 
-  // ---- Section build on scroll ----
-  const sections = $$("main > section");
-  if (sections.length) {
-    const viewportH = window.innerHeight || document.documentElement.clientHeight;
-    const pendingSections = [];
-
-    sections.forEach((section) => {
-      section.classList.add("scroll-section");
-      const rect = section.getBoundingClientRect();
-      const initiallyVisible = rect.top < viewportH * 0.88 && rect.bottom > 0;
-      if (initiallyVisible || reduceMotion) {
-        section.classList.add("is-built");
-      } else {
-        pendingSections.push(section);
-      }
-    });
-
-    if (!reduceMotion && pendingSections.length && "IntersectionObserver" in window) {
-      const sectionIO = new IntersectionObserver((entries, observer) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-built");
-          observer.unobserve(entry.target);
-        });
-      }, { threshold: 0.18, rootMargin: "0px 0px -8% 0px" });
-
-      pendingSections.forEach((section) => sectionIO.observe(section));
-    } else {
-      pendingSections.forEach((section) => section.classList.add("is-built"));
-    }
-  }
-
-  // ---- Reveal on scroll ----
-  const sectionArticles = $$("main > section article[class]");
-  sectionArticles.forEach((article) => {
-    article.classList.add("article-fx", "reveal");
-  });
-
-  const revealEls = $$(".reveal");
-  sections.forEach((section) => {
-    $$(".reveal", section).forEach((el, idx) => {
-      el.style.setProperty("--reveal-delay", `${Math.min(idx * 45, 180)}ms`);
-    });
-  });
-
-  if (reduceMotion || !("IntersectionObserver" in window)) {
-    revealEls.forEach((el) => el.classList.add("is-visible"));
-  } else {
-    const io = new IntersectionObserver((entries, observer) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-visible");
-        observer.unobserve(entry.target);
+  // ---- Section build + reveal (shared core) ----
+  const sections = (() => {
+    if (typeof uiCore.initializeSectionBuildAndReveal === "function") {
+      const result = uiCore.initializeSectionBuildAndReveal({
+        delayStep: 45,
+        delayCap: 180,
       });
-    }, { threshold: 0.12, rootMargin: "0px 0px -5% 0px" });
-    revealEls.forEach((el) => io.observe(el));
-  }
+      return Array.isArray(result?.sections) ? result.sections : [];
+    }
+    return $$("main > section");
+  })();
 
   // ---- Counters ----
   const counterEls = $$("[data-counter]");

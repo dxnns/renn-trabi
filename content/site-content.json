@@ -1,0 +1,627 @@
+{
+  "site": {
+    "domain": "https://www.bembelracingteam.de",
+    "name": "Bembel Racing Team",
+    "language": "de-DE",
+    "locale": "de_DE",
+    "author": "Bembel Racing Team",
+    "themeColor": "#0f1114",
+    "formatDetection": "telephone=no",
+    "referrer": "strict-origin-when-cross-origin",
+    "ogImage": {
+      "url": "https://www.bembelracingteam.de/assets/img/og-cover.jpg",
+      "secureUrl": "https://www.bembelracingteam.de/assets/img/og-cover.jpg",
+      "type": "image/jpeg",
+      "alt": "Renn-Trabi Enke 666 in Schwarz und Orange",
+      "width": 1200,
+      "height": 630
+    },
+    "assets": {
+      "teamImage": "https://www.bembelracingteam.de/assets/img/trabi.jpg",
+      "logo512": "https://www.bembelracingteam.de/assets/img/favicon-512x512.png",
+      "appleTouchIcon": "assets/img/apple-touch-icon.png",
+      "favicon32": "assets/img/favicon-32x32.png",
+      "favicon16": "assets/img/favicon-16x16.png",
+      "faviconSvg": "assets/img/favicon.svg"
+    },
+    "social": {
+      "instagramWebUrl": "https://www.instagram.com/bembelracingteam/",
+      "instagramAppUrl": "instagram://user?username=bembelracingteam"
+    }
+  },
+  "mainpageConfig": {
+    "hero": {
+      "badge": "Saison 2026 • Trabi-Rennen Sachsen",
+      "lead": "Wir sind ein kleines Rennteam und gehen dieses Jahr in Sachsen an den Start. Hier findest du Updates, Fahrzeugdetails, Sponsoren und wie du uns supporten kannst.",
+      "stats": {
+        "raceCars": 1,
+        "raceCarsLabel": "Renn-Trabi",
+        "crewCount": 3,
+        "crewLabel": "Crew",
+        "season": 2026,
+        "seasonLabel": "Saison"
+      }
+    },
+    "race": {
+      "heading": "Trabi-Rennen Sachsen",
+      "startLocal": "2026-08-15T10:00:00",
+      "location": "Sachsen",
+      "eventName": "Trabi-Rennen",
+      "region": "Sachsen",
+      "startWindow": "10:00 Uhr • Sprintlauf",
+      "statusUpcoming": "In Vorbereitung",
+      "statusLive": "Live / läuft",
+      "className": "2-Takt Fun Cup",
+      "crew": "3 Fahrer + Boxencrew",
+      "pitSlot": "Box 12",
+      "goal": "Finish + saubere Pace",
+      "roadmap": [
+        {
+          "task": "Wartung & Sicherheitscheck",
+          "date": "06.08",
+          "state": "done"
+        },
+        {
+          "task": "Testlauf + Fahrwerks-Feintuning",
+          "date": "07.08",
+          "state": "done"
+        },
+        {
+          "task": "Transport, Pit-Setup, Abnahme",
+          "date": "14.08",
+          "state": "active"
+        },
+        {
+          "task": "Rennwochenende & Race Day",
+          "date": "15.08",
+          "state": ""
+        }
+      ]
+    },
+    "ticker": [
+      "⚙️ Setup: Fahrwerk feinjustiert",
+      "🧰 Pit-Gear: Checkliste aktualisiert",
+      "🏁 Ziel: sauberer Lauf, keine DNFs",
+      "🔥 „Enke 666“ ready to race"
+    ],
+    "contact": {
+      "primaryEmail": "kontakt@bembelracingteam.de",
+      "footerEmail": "info@bembelracingteam.de",
+      "formMailTo": "kontakt@bembelracingteam.de",
+      "locationLabel": "Unterwegs • Sachsen 2026",
+      "instagram": {
+        "handle": "@bembelracingteam",
+        "webUrl": "https://www.instagram.com/bembelracingteam/",
+        "appUrl": "instagram://user?username=bembelracingteam"
+      }
+    },
+    "joinModal": {
+      "badge": "Team-Update",
+      "title": "Aktuell sind alle Teamplätze vergeben.",
+      "bodyMain": "Danke für dein Interesse am Mitmachen. Im Moment haben wir leider keine freien Plätze im Team.",
+      "bodySoft": "Wenn du uns trotzdem unterstützen möchtest, freuen wir uns sehr über Sponsoring.",
+      "ctaHref": "/sponsoring-anfrage.html",
+      "ctaLabel": "Sponsoring anfragen"
+    },
+    "raceCenter": {
+      "summary": {
+        "state": "In Vorbereitung",
+        "nextMilestone": "Transport, Pit-Setup und Abnahme",
+        "lastUpdateAt": ""
+      },
+      "feed": [
+        {
+          "id": "manual-setup-check",
+          "category": "technik",
+          "title": "Setup-Check abgeschlossen",
+          "body": "Bremsbalance stabil, Temperaturfenster passt fuer den Testlauf.",
+          "at": "2026-08-06T18:00:00+02:00",
+          "reactions": {
+            "fire": 0,
+            "checkered": 0,
+            "wrench": 0
+          }
+        },
+        {
+          "id": "manual-pit-ablauf",
+          "category": "team",
+          "title": "Pit-Ablauf geprobt",
+          "body": "Tool-Positionen angepasst, Boxenfenster weiter verbessert.",
+          "at": "2026-08-07T20:10:00+02:00",
+          "reactions": {
+            "fire": 0,
+            "checkered": 0,
+            "wrench": 0
+          }
+        },
+        {
+          "id": "manual-anreise",
+          "category": "rennen",
+          "title": "Anreisefenster fix",
+          "body": "Transport und Abnahme fuer den Vorabend finalisiert.",
+          "at": "2026-08-14T19:30:00+02:00",
+          "reactions": {
+            "fire": 0,
+            "checkered": 0,
+            "wrench": 0
+          }
+        }
+      ],
+      "polls": [
+        {
+          "id": "manual-focus-poll",
+          "question": "Was soll im naechsten Update im Fokus stehen?",
+          "options": [
+            {
+              "id": "pace",
+              "label": "Pace pushen",
+              "votes": 0
+            },
+            {
+              "id": "safety",
+              "label": "Safety zuerst",
+              "votes": 0
+            },
+            {
+              "id": "stops",
+              "label": "Pit-Stops optimieren",
+              "votes": 0
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "sponsoringConfig": {
+    "mailTo": "sponsoring@bembelracingteam.de",
+    "defaultPlan": "Bronze",
+    "defaultAmount": 1200,
+    "amountRange": {
+      "min": 300,
+      "max": 5000,
+      "step": 50
+    },
+    "amountChips": [
+      600,
+      1200,
+      2500,
+      4000
+    ],
+    "planMeta": {
+      "Bronze": {
+        "minAmount": 450,
+        "visibility": "Website + Update-Erwähnung",
+        "note": "Solider Einstieg mit klarer Sichtbarkeit in der Community."
+      },
+      "Silber": {
+        "minAmount": 1100,
+        "visibility": "Website + Fahrzeugbereich + Content",
+        "note": "Ausgewogene Mischung aus Reichweite und Markenpräsenz."
+      },
+      "Gold": {
+        "minAmount": 2200,
+        "visibility": "Prominente Platzierung + Co-Branding",
+        "note": "Maximale Sichtbarkeit und enge Zusammenarbeit."
+      }
+    },
+    "metrics": {
+      "partnerSlots": {
+        "used": 7,
+        "total": 12
+      },
+      "budgetPercent": 68,
+      "targetSeason": 2026,
+      "fundingPercent": 68
+    },
+    "impactRules": {
+      "starterMax": 899,
+      "goodMax": 2199,
+      "strongMax": 3499,
+      "slotsDivisor": 150,
+      "slotsMin": 3,
+      "tags": {
+        "starter": "Starter-Sichtbarkeit",
+        "good": "Gute Strecken-Sichtbarkeit",
+        "strong": "Starker Markenauftritt",
+        "headline": "Headline-Partner Potenzial"
+      }
+    }
+  },
+  "seoPages": {
+    "index": {
+      "path": "/",
+      "title": "Bembel Racing Team – Renn-Trabi „Enke 666“",
+      "description": "Kleines Rennteam, großer Spaß: Unser Renn-Trabi „Enke 666“ startet dieses Jahr beim Trabi-Rennen in Sachsen. News, Team, Fahrzeugdaten, Sponsoren & Kontakt.",
+      "robots": "index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1",
+      "googlebot": "index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1",
+      "og": {
+        "title": "Bembel Racing Team – Renn-Trabi „Enke 666“",
+        "description": "Wir starten dieses Jahr beim Trabi-Rennen in Sachsen. Folge unserem Projekt!",
+        "type": "website"
+      },
+      "twitter": {
+        "card": "summary_large_image",
+        "title": "Bembel Racing Team – Renn-Trabi „Enke 666“",
+        "description": "Kleines Rennteam, großer Spaß: News, Team, Fahrzeugdaten, Sponsoren und Kontakt."
+      },
+      "jsonLd": {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "SportsTeam",
+            "@id": "https://www.bembelracingteam.de/#organization",
+            "name": "Bembel Racing Team",
+            "url": "https://www.bembelracingteam.de/",
+            "image": "https://www.bembelracingteam.de/assets/img/trabi.jpg",
+            "logo": "https://www.bembelracingteam.de/assets/img/favicon-512x512.png",
+            "description": "Kleines Rennteam rund um den Renn-Trabi Enke 666 mit Fokus auf das Trabi-Rennen in Sachsen 2026.",
+            "email": "kontakt@bembelracingteam.de",
+            "sport": "Motorsport",
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "contactType": "customer support",
+                "email": "kontakt@bembelracingteam.de",
+                "availableLanguage": [
+                  "de"
+                ]
+              }
+            ],
+            "sameAs": [
+              "https://www.instagram.com/bembelracingteam/"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://www.bembelracingteam.de/#website",
+            "url": "https://www.bembelracingteam.de/",
+            "name": "Bembel Racing Team",
+            "inLanguage": "de-DE",
+            "publisher": {
+              "@id": "https://www.bembelracingteam.de/#organization"
+            }
+          },
+          {
+            "@type": "WebPage",
+            "@id": "https://www.bembelracingteam.de/#webpage",
+            "url": "https://www.bembelracingteam.de/",
+            "name": "Bembel Racing Team – Renn-Trabi Enke 666",
+            "description": "Kleines Rennteam, großer Spaß: News, Team, Fahrzeugdaten, Sponsoren und Kontakt.",
+            "inLanguage": "de-DE",
+            "isPartOf": {
+              "@id": "https://www.bembelracingteam.de/#website"
+            },
+            "about": {
+              "@id": "https://www.bembelracingteam.de/#organization"
+            },
+            "primaryImageOfPage": {
+              "@type": "ImageObject",
+              "url": "https://www.bembelracingteam.de/assets/img/trabi.jpg"
+            }
+          },
+          {
+            "@type": "Event",
+            "@id": "https://www.bembelracingteam.de/#event-2026",
+            "name": "Trabi-Rennen Sachsen 2026",
+            "startDate": "2026-08-15",
+            "eventStatus": "https://schema.org/EventScheduled",
+            "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+            "location": {
+              "@type": "Place",
+              "name": "Sachsen, Deutschland",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Sachsen",
+                "addressCountry": "DE"
+              }
+            },
+            "organizer": {
+              "@id": "https://www.bembelracingteam.de/#organization"
+            },
+            "performer": {
+              "@id": "https://www.bembelracingteam.de/#organization"
+            },
+            "url": "https://www.bembelracingteam.de/#race",
+            "description": "Saisonziel 2026: Start beim Trabi-Rennen in Sachsen mit dem Renn-Trabi Enke 666."
+          }
+        ]
+      }
+    },
+    "team": {
+      "path": "/team.html",
+      "title": "Team | Bembel Racing Team",
+      "description": "Das Team hinter dem Renn-Trabi „Enke 666“: Rollen, Aufgaben und kurzer Blick hinter die Kulissen.",
+      "robots": "index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1",
+      "googlebot": "index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1",
+      "og": {
+        "title": "Team | Bembel Racing Team",
+        "description": "Crew, Rollen und Arbeitsweise hinter dem Renn-Trabi „Enke 666“.",
+        "type": "website"
+      },
+      "twitter": {
+        "card": "summary_large_image",
+        "title": "Team | Bembel Racing Team",
+        "description": "Die Crew hinter „Enke 666“: Rollen, Aufgaben und Teamprofil."
+      },
+      "jsonLd": {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "SportsTeam",
+            "@id": "https://www.bembelracingteam.de/#organization",
+            "name": "Bembel Racing Team",
+            "url": "https://www.bembelracingteam.de/",
+            "email": "kontakt@bembelracingteam.de",
+            "image": "https://www.bembelracingteam.de/assets/img/trabi.jpg",
+            "logo": "https://www.bembelracingteam.de/assets/img/favicon-512x512.png",
+            "sport": "Motorsport"
+          },
+          {
+            "@type": "AboutPage",
+            "@id": "https://www.bembelracingteam.de/team.html#webpage",
+            "url": "https://www.bembelracingteam.de/team.html",
+            "name": "Team | Bembel Racing Team",
+            "description": "Teamprofil, Rollen und Aufgaben hinter dem Renn-Trabi Enke 666.",
+            "inLanguage": "de-DE",
+            "about": {
+              "@id": "https://www.bembelracingteam.de/#organization"
+            }
+          }
+        ]
+      }
+    },
+    "sponsoring": {
+      "path": "/sponsoring-anfrage.html",
+      "title": "Sponsoring-Anfrage | Bembel Racing Team",
+      "description": "Sponsoring-Anfrage für Bembel Racing Team: Paket wählen, Budget festlegen und direkt Kontakt aufnehmen.",
+      "robots": "index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1",
+      "googlebot": "index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1",
+      "og": {
+        "title": "Sponsoring-Anfrage | Bembel Racing Team",
+        "description": "Sponsoring-Paket auswählen, Budget konfigurieren und direkt eine Anfrage an das Team senden.",
+        "type": "website"
+      },
+      "twitter": {
+        "card": "summary_large_image",
+        "title": "Sponsoring-Anfrage | Bembel Racing Team",
+        "description": "Mehr Sichtbarkeit für Marken und mehr Rennpower für Enke 666."
+      },
+      "jsonLd": {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "SportsTeam",
+            "@id": "https://www.bembelracingteam.de/#organization",
+            "name": "Bembel Racing Team",
+            "url": "https://www.bembelracingteam.de/",
+            "email": "kontakt@bembelracingteam.de",
+            "image": "https://www.bembelracingteam.de/assets/img/trabi.jpg",
+            "logo": "https://www.bembelracingteam.de/assets/img/favicon-512x512.png",
+            "sport": "Motorsport"
+          },
+          {
+            "@type": "ContactPage",
+            "@id": "https://www.bembelracingteam.de/sponsoring-anfrage.html#webpage",
+            "url": "https://www.bembelracingteam.de/sponsoring-anfrage.html",
+            "name": "Sponsoring-Anfrage | Bembel Racing Team",
+            "description": "Anfrageformular für Sponsoring-Partnerschaften mit dem Bembel Racing Team.",
+            "inLanguage": "de-DE",
+            "about": {
+              "@id": "https://www.bembelracingteam.de/#organization"
+            },
+            "breadcrumb": {
+              "@id": "https://www.bembelracingteam.de/sponsoring-anfrage.html#breadcrumb"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://www.bembelracingteam.de/sponsoring-anfrage.html#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Startseite",
+                "item": "https://www.bembelracingteam.de/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Sponsoring-Anfrage",
+                "item": "https://www.bembelracingteam.de/sponsoring-anfrage.html"
+              }
+            ]
+          },
+          {
+            "@type": "Service",
+            "@id": "https://www.bembelracingteam.de/sponsoring-anfrage.html#service",
+            "name": "Sponsoring-Partnerschaft mit Bembel Racing Team",
+            "serviceType": "Motorsport-Sponsoring",
+            "provider": {
+              "@id": "https://www.bembelracingteam.de/#organization"
+            },
+            "areaServed": {
+              "@type": "Country",
+              "name": "Deutschland"
+            },
+            "offers": [
+              {
+                "@type": "Offer",
+                "name": "Bronze Sponsoring",
+                "priceCurrency": "EUR",
+                "price": "450",
+                "priceSpecification": {
+                  "@type": "PriceSpecification",
+                  "priceCurrency": "EUR",
+                  "minPrice": "450"
+                },
+                "url": "https://www.bembelracingteam.de/sponsoring-anfrage.html"
+              },
+              {
+                "@type": "Offer",
+                "name": "Silber Sponsoring",
+                "priceCurrency": "EUR",
+                "price": "1100",
+                "priceSpecification": {
+                  "@type": "PriceSpecification",
+                  "priceCurrency": "EUR",
+                  "minPrice": "1100"
+                },
+                "url": "https://www.bembelracingteam.de/sponsoring-anfrage.html"
+              },
+              {
+                "@type": "Offer",
+                "name": "Gold Sponsoring",
+                "priceCurrency": "EUR",
+                "price": "2200",
+                "priceSpecification": {
+                  "@type": "PriceSpecification",
+                  "priceCurrency": "EUR",
+                  "minPrice": "2200"
+                },
+                "url": "https://www.bembelracingteam.de/sponsoring-anfrage.html"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "notFound": {
+      "path": "/404.html",
+      "title": "404 | Bembel Racing Team",
+      "description": "Die angeforderte Seite wurde nicht gefunden. Zurueck zur Startseite des Bembel Racing Teams.",
+      "robots": "noindex,follow,noarchive",
+      "googlebot": "noindex,follow,noarchive",
+      "og": {
+        "title": "404 | Bembel Racing Team",
+        "description": "Diese Seite existiert nicht. Zurueck zur Startseite.",
+        "type": "website"
+      },
+      "twitter": {
+        "card": "summary_large_image",
+        "title": "404 | Bembel Racing Team",
+        "description": "Diese Seite existiert nicht. Zurueck zur Startseite."
+      },
+      "jsonLd": {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "url": "https://www.bembelracingteam.de/404.html",
+        "name": "404 | Bembel Racing Team",
+        "description": "Die angeforderte Seite wurde nicht gefunden."
+      }
+    }
+  },
+  "sitemap": {
+    "entries": [
+      {
+        "path": "/",
+        "lastmod": "2026-02-09",
+        "changefreq": "weekly",
+        "priority": "1.0",
+        "image": {
+          "loc": "https://www.bembelracingteam.de/assets/img/og-cover.jpg",
+          "title": "Bembel Racing Team Renn-Trabi Enke 666"
+        }
+      },
+      {
+        "path": "/team.html",
+        "lastmod": "2026-02-09",
+        "changefreq": "monthly",
+        "priority": "0.8",
+        "image": {
+          "loc": "https://www.bembelracingteam.de/assets/img/trabi.jpg",
+          "title": "Teamseite Bembel Racing Team"
+        }
+      },
+      {
+        "path": "/sponsoring-anfrage.html",
+        "lastmod": "2026-02-09",
+        "changefreq": "weekly",
+        "priority": "0.9",
+        "image": {
+          "loc": "https://www.bembelracingteam.de/assets/img/trabi.jpg",
+          "title": "Sponsoring-Anfrage Bembel Racing Team"
+        }
+      }
+    ]
+  },
+  "feed": {
+    "title": "Bembel Racing Team Updates",
+    "description": "News und Updates rund um den Renn-Trabi Enke 666 und das Bembel Racing Team.",
+    "language": "de-de",
+    "lastBuildDate": "Mon, 09 Feb 2026 12:00:00 +0100",
+    "ttl": 720,
+    "imageUrl": "https://www.bembelracingteam.de/assets/img/og-cover.jpg",
+    "items": [
+      {
+        "title": "Saison 2026: Trabi-Rennen Sachsen im Fokus",
+        "link": "https://www.bembelracingteam.de/#race",
+        "description": "Das Team bereitet den Rennstart 2026 in Sachsen vor. Setup, Roadmap und Race-Center werden laufend aktualisiert.",
+        "pubDate": "Mon, 09 Feb 2026 09:00:00 +0100",
+        "guid": "https://www.bembelracingteam.de/#race"
+      },
+      {
+        "title": "Sponsoring-Anfrage jetzt direkt online",
+        "link": "https://www.bembelracingteam.de/sponsoring-anfrage.html",
+        "description": "Unternehmen koennen Sponsoring-Pakete waehlen, Budgets konfigurieren und direkt eine Anfrage senden.",
+        "pubDate": "Mon, 09 Feb 2026 09:15:00 +0100",
+        "guid": "https://www.bembelracingteam.de/sponsoring-anfrage.html"
+      },
+      {
+        "title": "Teamprofil und Rollen online",
+        "link": "https://www.bembelracingteam.de/team.html",
+        "description": "Die Teamseite zeigt die Crew-Rollen und den Arbeitsmodus hinter Enke 666.",
+        "pubDate": "Mon, 09 Feb 2026 09:30:00 +0100",
+        "guid": "https://www.bembelracingteam.de/team.html"
+      }
+    ]
+  },
+  "manifest": {
+    "id": "/",
+    "name": "Bembel Racing Team - Renn-Trabi Enke 666",
+    "short_name": "Bembel Racing",
+    "description": "Teamseite, Renn-Updates und Sponsoring-Anfrage rund um den Renn-Trabi Enke 666.",
+    "lang": "de-DE",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "categories": [
+      "sports",
+      "automotive",
+      "events"
+    ],
+    "background_color": "#0f1114",
+    "theme_color": "#0f1114",
+    "icons": [
+      {
+        "src": "/assets/img/favicon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png",
+        "purpose": "any maskable"
+      },
+      {
+        "src": "/assets/img/favicon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+      },
+      {
+        "src": "/assets/img/favicon.svg",
+        "sizes": "any",
+        "type": "image/svg+xml",
+        "purpose": "any"
+      }
+    ],
+    "shortcuts": [
+      {
+        "name": "Team",
+        "short_name": "Team",
+        "url": "/team.html"
+      },
+      {
+        "name": "Sponsoring",
+        "short_name": "Sponsoring",
+        "url": "/sponsoring-anfrage.html"
+      }
+    ]
+  }
+}

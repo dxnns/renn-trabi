@@ -1,0 +1,663 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.bembelracingteam.de/schemas/site-content.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "site",
+    "mainpageConfig",
+    "sponsoringConfig",
+    "seoPages",
+    "sitemap",
+    "feed",
+    "manifest"
+  ],
+  "properties": {
+    "site": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "domain",
+        "name",
+        "language",
+        "locale",
+        "author",
+        "themeColor",
+        "formatDetection",
+        "referrer",
+        "ogImage",
+        "assets",
+        "social"
+      ],
+      "properties": {
+        "domain": {
+          "type": "string",
+          "format": "uri"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language": {
+          "type": "string",
+          "minLength": 2
+        },
+        "locale": {
+          "type": "string",
+          "minLength": 2
+        },
+        "author": {
+          "type": "string",
+          "minLength": 1
+        },
+        "themeColor": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "formatDetection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "referrer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ogImage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "url",
+            "secureUrl",
+            "type",
+            "alt",
+            "width",
+            "height"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "secureUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "alt": {
+              "type": "string",
+              "minLength": 1
+            },
+            "width": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "assets": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "teamImage",
+            "logo512",
+            "appleTouchIcon",
+            "favicon32",
+            "favicon16",
+            "faviconSvg"
+          ],
+          "properties": {
+            "teamImage": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logo512": {
+              "type": "string",
+              "minLength": 1
+            },
+            "appleTouchIcon": {
+              "type": "string",
+              "minLength": 1
+            },
+            "favicon32": {
+              "type": "string",
+              "minLength": 1
+            },
+            "favicon16": {
+              "type": "string",
+              "minLength": 1
+            },
+            "faviconSvg": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "social": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "instagramWebUrl",
+            "instagramAppUrl"
+          ],
+          "properties": {
+            "instagramWebUrl": {
+              "type": "string",
+              "minLength": 1
+            },
+            "instagramAppUrl": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "mainpageConfig": {
+      "type": "object",
+      "required": [
+        "hero",
+        "race",
+        "ticker",
+        "contact",
+        "joinModal",
+        "raceCenter"
+      ],
+      "additionalProperties": true
+    },
+    "sponsoringConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mailTo",
+        "defaultPlan",
+        "defaultAmount",
+        "amountRange",
+        "amountChips",
+        "planMeta",
+        "metrics",
+        "impactRules"
+      ],
+      "properties": {
+        "mailTo": {
+          "type": "string",
+          "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$"
+        },
+        "defaultPlan": {
+          "type": "string",
+          "enum": [
+            "Bronze",
+            "Silber",
+            "Gold"
+          ]
+        },
+        "defaultAmount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "amountRange": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "min",
+            "max",
+            "step"
+          ],
+          "properties": {
+            "min": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "max": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "step": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "amountChips": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "planMeta": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "Bronze",
+            "Silber",
+            "Gold"
+          ],
+          "properties": {
+            "Bronze": {
+              "$ref": "#/$defs/planMetaEntry"
+            },
+            "Silber": {
+              "$ref": "#/$defs/planMetaEntry"
+            },
+            "Gold": {
+              "$ref": "#/$defs/planMetaEntry"
+            }
+          }
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "partnerSlots",
+            "budgetPercent",
+            "targetSeason",
+            "fundingPercent"
+          ],
+          "properties": {
+            "partnerSlots": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "used",
+                "total"
+              ],
+              "properties": {
+                "used": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "total": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "budgetPercent": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "targetSeason": {
+              "type": "integer",
+              "minimum": 2000
+            },
+            "fundingPercent": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            }
+          }
+        },
+        "impactRules": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "starterMax",
+            "goodMax",
+            "strongMax",
+            "slotsDivisor",
+            "slotsMin",
+            "tags"
+          ],
+          "properties": {
+            "starterMax": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "goodMax": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "strongMax": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "slotsDivisor": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "slotsMin": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "tags": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "starter",
+                "good",
+                "strong",
+                "headline"
+              ],
+              "properties": {
+                "starter": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "good": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "strong": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "headline": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "seoPages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "index",
+        "team",
+        "sponsoring",
+        "notFound"
+      ],
+      "properties": {
+        "index": {
+          "$ref": "#/$defs/seoPage"
+        },
+        "team": {
+          "$ref": "#/$defs/seoPage"
+        },
+        "sponsoring": {
+          "$ref": "#/$defs/seoPage"
+        },
+        "notFound": {
+          "$ref": "#/$defs/seoPage"
+        }
+      }
+    },
+    "sitemap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entries"
+      ],
+      "properties": {
+        "entries": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "lastmod",
+              "changefreq",
+              "priority",
+              "image"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "pattern": "^/"
+              },
+              "lastmod": {
+                "type": "string",
+                "format": "date"
+              },
+              "changefreq": {
+                "type": "string",
+                "enum": [
+                  "always",
+                  "hourly",
+                  "daily",
+                  "weekly",
+                  "monthly",
+                  "yearly",
+                  "never"
+                ]
+              },
+              "priority": {
+                "type": "string",
+                "pattern": "^(0(\\.[0-9])?|1(\\.0)?)$"
+              },
+              "image": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "loc",
+                  "title"
+                ],
+                "properties": {
+                  "loc": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "feed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "description",
+        "language",
+        "lastBuildDate",
+        "ttl",
+        "imageUrl",
+        "items"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language": {
+          "type": "string",
+          "minLength": 2
+        },
+        "lastBuildDate": {
+          "type": "string",
+          "minLength": 10
+        },
+        "ttl": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "imageUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "title",
+              "link",
+              "description",
+              "pubDate",
+              "guid"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "link": {
+                "type": "string",
+                "format": "uri"
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1
+              },
+              "pubDate": {
+                "type": "string",
+                "minLength": 10
+              },
+              "guid": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          }
+        }
+      }
+    },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "id",
+        "name",
+        "short_name",
+        "description",
+        "lang",
+        "start_url",
+        "scope",
+        "display",
+        "categories",
+        "background_color",
+        "theme_color",
+        "icons",
+        "shortcuts"
+      ]
+    }
+  },
+  "$defs": {
+    "planMetaEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minAmount",
+        "visibility",
+        "note"
+      ],
+      "properties": {
+        "minAmount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "visibility": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "seoPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "title",
+        "description",
+        "robots",
+        "googlebot",
+        "og",
+        "twitter",
+        "jsonLd"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^/"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "robots": {
+          "type": "string",
+          "minLength": 1
+        },
+        "googlebot": {
+          "type": "string",
+          "minLength": 1
+        },
+        "og": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "description",
+            "type"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1
+            },
+            "type": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "twitter": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "card",
+            "title",
+            "description"
+          ],
+          "properties": {
+            "card": {
+              "type": "string",
+              "minLength": 1
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "jsonLd": {
+          "type": [
+            "object",
+            "array"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -3,6 +3,8 @@
 Stand: 2026-02-09  
 Geltungsbereich: Release auf GitHub Hosting (`www.bembelracingteam.de`)
 
+Hinweis: `404.html` ist Teil des automatischen `content:sync`-Flows; inhaltliche SEO-Angaben werden zentral in `content/site-content.json` gepflegt.
+
 ## 1. SEO-Basis vor dem Release
 - [ ] Es wird geprüft, dass alle Canonical-URLs auf `https://www.bembelracingteam.de/...` verweisen.
 - [ ] Es wird geprüft, dass `sitemap.xml` nur indexierbare Seiten enthält.
@@ -15,35 +17,14 @@ Geltungsbereich: Release auf GitHub Hosting (`www.bembelracingteam.de`)
 - [ ] Es wird geprüft, dass `feed.xml` bei inhaltlichen Änderungen (`lastBuildDate`, `pubDate`) aktualisiert wird.
 
 ## 2. Lokale technische Prüfung vor dem Push
-- [ ] Es wird geprüft, dass keine Node-Syntaxfehler vorliegen (falls `server.js` genutzt wird).
+- [ ] Content-Datei und Schema sind valide.
+- [ ] Alle generierten Artefakte sind synchron.
+- [ ] Syntax und lokale Referenzen sind ohne Fehler.
 
 ```powershell
-node --check server.js
-```
-
-- [ ] Es wird geprüft, dass keine fehlenden lokalen Referenzen in HTML-Dateien vorhanden sind.
-
-```powershell
-@'
-const fs=require('node:fs');
-const path=require('node:path');
-const pages=['index.html','team.html','sponsoring-anfrage.html','404.html'];
-const attr=/\b(?:src|href)=\"([^\"]+)\"/g;
-const missing=[];
-for(const page of pages){
-  const html=fs.readFileSync(page,'utf8');
-  for(const m of html.matchAll(attr)){
-    const ref=m[1];
-    if(!ref||ref.startsWith('#')||ref.startsWith('http://')||ref.startsWith('https://')||ref.startsWith('mailto:')||ref.startsWith('tel:')||ref.startsWith('data:')) continue;
-    const clean=ref.split('?')[0].split('#')[0];
-    if(!clean||clean.endsWith('/')) continue;
-    const local=path.resolve(path.dirname(page), clean.replace(/^\//,''));
-    if(!fs.existsSync(local)) missing.push(`${page} -> ${ref}`);
-  }
-}
-if(missing.length===0){ console.log('NO_MISSING_REFERENCES'); }
-else { console.log('MISSING_REFERENCES'); for(const item of missing) console.log(item); process.exitCode=1; }
-'@ | node -
+npm run content:validate
+npm run content:check
+npm run verify
 ```
 
 ## 3. Live-Prüfung direkt nach dem Deploy

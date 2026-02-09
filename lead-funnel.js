@@ -4,6 +4,11 @@ const fs = require("node:fs");
 const fsp = require("node:fs/promises");
 const path = require("node:path");
 const crypto = require("node:crypto");
+const { sendJson, sendApiError, readJsonBody } = require("./lib/server/json-http");
+const { normalizeSingleLine, normalizeMultiline, sanitize } = require("./lib/server/text");
+const { hashSensitive, timingSafeEqualText } = require("./lib/server/crypto");
+const { resolveDataPath } = require("./lib/server/paths");
+const { toInt } = require("./lib/server/numbers");
 
 function createLeadFunnel(options) {
   const rootDir = path.resolve(options.rootDir);
@@ -1061,80 +1066,6 @@ function canonicalHostPortFromReferer(refererHeader) {
   }
 }
 
-function timingSafeEqualText(a, b) {
-  const aDigest = crypto.createHash("sha256").update(String(a)).digest();
-  const bDigest = crypto.createHash("sha256").update(String(b)).digest();
-  return crypto.timingSafeEqual(aDigest, bDigest);
-}
-
-function sendJson(req, res, statusCode, payload, extraHeaders = {}) {
-  if (res.headersSent) return true;
-
-  for (const [name, value] of Object.entries(extraHeaders)) {
-    res.setHeader(name, value);
-  }
-
-  res.statusCode = statusCode;
-  if (statusCode === 204 || payload === null) {
-    return res.end();
-  }
-
-  const body = `${JSON.stringify(payload)}\n`;
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
-  res.setHeader("Content-Length", Buffer.byteLength(body));
-  res.end(body);
-  return true;
-}
-
-function sendApiError(req, res, err) {
-  const code = normalizeSingleLine(err?.message || "", 80);
-  if (code === "payload_too_large") {
-    return sendJson(req, res, 413, { error: "payload_too_large" }, { "Cache-Control": "no-store" });
-  }
-  if (code === "unsupported_media_type") {
-    return sendJson(req, res, 415, { error: "unsupported_media_type" }, { "Cache-Control": "no-store" });
-  }
-  if (code === "invalid_payload" || code === "empty_body" || code === "invalid_json") {
-    return sendJson(req, res, 400, { error: "bad_request" }, { "Cache-Control": "no-store" });
-  }
-  return sendJson(req, res, 500, { error: "internal_server_error" }, { "Cache-Control": "no-store" });
-}
-
-async function readJsonBody(req, maxBodyBytes) {
-  const contentType = String(req.headers["content-type"] || "").toLowerCase();
-  if (!contentType.includes("application/json")) {
-    throw new Error("unsupported_media_type");
-  }
-
-  let size = 0;
-  const chunks = [];
-  for await (const chunk of req) {
-    size += chunk.length;
-    if (size > maxBodyBytes) {
-      throw new Error("payload_too_large");
-    }
-    chunks.push(chunk);
-  }
-
-  if (size === 0) {
-    throw new Error("empty_body");
-  }
-
-  const raw = Buffer.concat(chunks).toString("utf8");
-  let parsed;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    throw new Error("invalid_json");
-  }
-
-  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-    throw new Error("invalid_json");
-  }
-
-  return parsed;
-}
-
 async function ensureLeadStoreFile(filePath, logSecurity) {
   await fsp.mkdir(path.dirname(filePath), { recursive: true });
 
@@ -1607,40 +1538,6 @@ function loadNodemailer() {
   }
 }
 
-function resolveDataPath(rootDir, relativePath) {
-  const absolute = path.resolve(rootDir, String(relativePath || ""));
-  const rel = path.relative(rootDir, absolute);
-  if (rel.startsWith("..") || path.isAbsolute(rel)) {
-    throw new Error("data_path_outside_root");
-  }
-  return absolute;
-}
-
-function hashSensitive(value, salt) {
-  return crypto
-    .createHash("sha256")
-    .update(`${salt}:${String(value || "")}`)
-    .digest("hex")
-    .slice(0, 24);
-}
-
-function normalizeSingleLine(value, maxLength) {
-  if (typeof value !== "string") return "";
-  return value
-    .replace(/[\r\n\t]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, maxLength);
-}
-
-function normalizeMultiline(value, maxLength) {
-  if (typeof value !== "string") return "";
-  return value
-    .replace(/\r/g, "")
-    .trim()
-    .slice(0, maxLength);
-}
-
 function normalizePathHint(value) {
   const normalized = normalizeSingleLine(value, 180);
   if (!normalized.startsWith("/")) return "";
@@ -1663,17 +1560,4 @@ function isValidEmail(value) {
   const email = normalizeSingleLine(value, 220);
   if (!email) return false;
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
-}
-
-function sanitize(value) {
-  return String(value || "")
-    .replace(/[\r\n]/g, " ")
-    .slice(0, 300);
-}
-
-function toInt(value, fallback, min, max) {
-  const parsed = Number(value);
-  if (!Number.isInteger(parsed)) return fallback;
-  if (parsed < min || parsed > max) return fallback;
-  return parsed;
 }
