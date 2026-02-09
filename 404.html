@@ -4,25 +4,304 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>404 | Bembel Racing Team</title>
-  <meta name="description" content="Die angeforderte Seite wurde nicht gefunden. Zurück zur Startseite des Bembel Racing Teams." />
+  <meta name="description" content="Die angeforderte Seite wurde nicht gefunden. Zurueck zur Startseite des Bembel Racing Teams." />
   <meta name="robots" content="noindex,follow,noarchive" />
   <meta name="googlebot" content="noindex,follow,noarchive" />
   <meta name="theme-color" content="#0f1114" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
   <link rel="canonical" href="https://www.bembelracingteam.de/404.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/style.css" />
   <link rel="stylesheet" href="assets/css/mobile/shared.css" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png" />
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+
+  <style>
+    .notfound-page{
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .notfound-page main{
+      flex: 1;
+      display: flex;
+    }
+
+    .notfound-stage{
+      width: 100%;
+      display: grid;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: clamp(34px, 6vw, 76px) 0;
+    }
+
+    .notfound-stage::before{
+      content: "";
+      position: absolute;
+      inset: -14% -12% auto;
+      height: clamp(230px, 34vw, 420px);
+      background: radial-gradient(circle at 50% 30%, rgba(255,106,0,.42), rgba(255,106,0,0) 62%);
+      pointer-events: none;
+    }
+
+    .notfound-stage::after{
+      content: "";
+      position: absolute;
+      right: -12%;
+      top: 6%;
+      width: min(480px, 54vw);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,.12), rgba(255,255,255,0) 70%);
+      pointer-events: none;
+    }
+
+    .notfound-grid{
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(0, .94fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .notfound-copy{
+      display: grid;
+      gap: 14px;
+      padding: clamp(22px, 3vw, 34px);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,0) 42%),
+        rgba(20,24,32,.72);
+    }
+
+    .notfound-code{
+      margin: 4px 0 0;
+      font-size: clamp(94px, 20vw, 220px);
+      line-height: .78;
+      letter-spacing: -.06em;
+      font-weight: 900;
+      color: transparent;
+      -webkit-text-stroke: 2px rgba(255,138,43,.88);
+      text-shadow: 0 0 34px rgba(255,106,0,.24);
+    }
+
+    .notfound-code span{
+      color: var(--accent);
+      -webkit-text-stroke: 0;
+      text-shadow: 0 10px 28px rgba(255,106,0,.34);
+    }
+
+    .notfound-copy h1{
+      margin: 0;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.08;
+      letter-spacing: -.02em;
+    }
+
+    .notfound-copy .lead{
+      margin: 0;
+      max-width: 56ch;
+    }
+
+    .notfound-actions{
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+
+    .notfound-links{
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .notfound-card{
+      display: grid;
+      overflow: hidden;
+      background: rgba(20,24,32,.68);
+    }
+
+    .notfound-media{
+      margin: 0;
+      min-height: 220px;
+      position: relative;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .notfound-media::after{
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(15,17,20,.22) 0%, rgba(15,17,20,.64) 100%),
+        linear-gradient(115deg, rgba(255,106,0,.18) 0%, rgba(255,106,0,0) 58%);
+      pointer-events: none;
+    }
+
+    .notfound-media img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 42%;
+    }
+
+    .notfound-card-body{
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .notfound-spec-list{
+      margin-top: 4px;
+      gap: 10px;
+    }
+
+    .notfound-spec-list li{
+      padding-bottom: 10px;
+    }
+
+    .notfound-spec-list strong{
+      font-size: 14px;
+    }
+
+    @media (max-width: 980px){
+      .notfound-grid{
+        grid-template-columns: 1fr;
+      }
+
+      .notfound-media{
+        max-height: 300px;
+      }
+    }
+
+    @media (max-width: 760px){
+      .notfound-copy,
+      .notfound-card-body{
+        padding: 14px;
+      }
+
+      .notfound-actions .btn{
+        flex: 1 1 100%;
+      }
+    }
+  </style>
 </head>
-<body>
-  <main id="content" class="section section-alt">
-    <div class="container">
-      <div class="panel">
-        <h1>Seite nicht gefunden (404)</h1>
-        <p class="muted">Der Link ist veraltet oder falsch. Nutze die folgenden Einstiege:</p>
-        <p><a class="btn" href="/">Zur Startseite</a></p>
-        <p><a class="link" href="/team.html">Team</a> • <a class="link" href="/sponsoring-anfrage.html">Sponsoring</a></p>
+<body class="notfound-page">
+  <a class="skip-link" href="#content">Zum Inhalt springen</a>
+
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="Zur Startseite">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-text">
+          <strong>Bembel Racing Team</strong>
+          <span class="brand-sub">Renn-Trabi "Enke 666"</span>
+        </span>
+      </a>
+
+      <nav class="nav" aria-label="Hauptnavigation">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navmenu">
+          <span class="nav-toggle-lines" aria-hidden="true"></span>
+          <span class="sr-only">Menue</span>
+        </button>
+        <div class="navmenu" id="navmenu">
+          <a href="index.html">Start</a>
+          <a href="index.html#about">Ueber uns</a>
+          <a href="team.html">Team</a>
+          <a href="sponsoring-anfrage.html" class="btn btn-small">Sponsoring</a>
+        </div>
+      </nav>
+    </div>
+    <div class="progress" aria-hidden="true"><span class="progress-bar"></span></div>
+  </header>
+
+  <main id="content">
+    <section class="section notfound-stage">
+      <div class="container">
+        <div class="notfound-grid">
+          <article class="panel notfound-copy reveal">
+            <p class="badge">
+              <span class="dot"></span>
+              404 • Streckenabschnitt gesperrt
+            </p>
+
+            <p class="notfound-code" aria-hidden="true">4<span>0</span>4</p>
+            <h1>Diese Seite hat die Ideallinie verpasst.</h1>
+            <p class="lead">
+              Der Link ist veraltet, falsch oder wurde verschoben. Ueber die folgenden Routen kommst du schnell wieder
+              auf Kurs.
+            </p>
+
+            <div class="notfound-actions">
+              <a class="btn" href="index.html">Zur Startseite</a>
+              <a class="btn btn-ghost" href="index.html#race">Zum Rennen</a>
+            </div>
+
+            <div class="notfound-links">
+              <a class="link" href="team.html">Team ansehen</a>
+              <span aria-hidden="true">•</span>
+              <a class="link" href="sponsoring-anfrage.html">Sponsoring-Anfrage</a>
+              <span aria-hidden="true">•</span>
+              <a class="link" href="index.html#contact">Kontakt</a>
+            </div>
+          </article>
+
+          <aside class="panel notfound-card reveal" aria-label="Renn-Trabi Vorschau">
+            <figure class="notfound-media">
+              <img src="assets/img/trabi.jpg" alt="Renn-Trabi Enke 666 in Schwarz und Orange" loading="eager" />
+            </figure>
+
+            <div class="notfound-card-body">
+              <p class="muted small">Naechste sinnvolle Stops</p>
+              <ul class="spec-list notfound-spec-list">
+                <li>
+                  <span>Startseite</span>
+                  <strong><a class="link" href="index.html">/index.html</a></strong>
+                </li>
+                <li>
+                  <span>Teamprofil</span>
+                  <strong><a class="link" href="team.html">/team</a></strong>
+                </li>
+                <li>
+                  <span>Partner werden</span>
+                  <strong><a class="link" href="sponsoring-anfrage.html">/sponsoring-anfrage</a></strong>
+                </li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>
+        <strong>Bembel Racing Team</strong>
+        <div class="muted small">© <span data-year></span> • Renn-Trabi "Enke 666"</div>
+        <div class="muted small"><a class="link" href="mailto:info@bembelracingteam.de">info@bembelracingteam.de</a></div>
+      </div>
+
+      <div class="footer-links">
+        <a class="link" href="index.html">Startseite</a>
+        <a class="link" href="team.html">Team</a>
+        <a class="link" href="sponsoring-anfrage.html">Sponsoring</a>
       </div>
     </div>
-  </main>
+  </footer>
+
+  <script src="assets/js/main.js" defer></script>
 </body>
 </html>
