@@ -3,29 +3,224 @@
    ========================= */
 
 (() => {
-  // ---- Config: Race Date/Time (Europe/Berlin) ----
-  // Setze das echte Datum hier:
-  // Beispiel: 2026-08-15T10:00:00 (lokale Zeit des Browsers)
-  const RACE_START_LOCAL = "2026-08-15T10:00:00";
-  const RACE_LOCATION = "Sachsen";
+  // ---- Mainpage config ----
+  const asObject = (value) => (value && typeof value === "object" && !Array.isArray(value) ? value : {});
+  const asArray = (value) => (Array.isArray(value) ? value : []);
+  const toText = (value, fallback = "") => {
+    if (value === null || value === undefined) return fallback;
+    return String(value);
+  };
+
+  const DEFAULT_MAINPAGE_CONFIG = {
+    hero: {
+      badge: "Saison 2026 • Trabi-Rennen Sachsen",
+      lead: "Wir sind ein kleines Rennteam und gehen dieses Jahr in Sachsen an den Start. Hier findest du Updates, Fahrzeugdetails, Sponsoren und wie du uns supporten kannst.",
+      stats: {
+        raceCars: 1,
+        raceCarsLabel: "Renn-Trabi",
+        crewCount: 3,
+        crewLabel: "Crew",
+        season: 2026,
+        seasonLabel: "Saison",
+      },
+    },
+    race: {
+      heading: "Trabi-Rennen Sachsen",
+      startLocal: "2026-08-15T10:00:00",
+      location: "Sachsen",
+      eventName: "Trabi-Rennen",
+      region: "Sachsen",
+      startWindow: "10:00 Uhr • Sprintlauf",
+      statusUpcoming: "In Vorbereitung",
+      statusLive: "Live / läuft",
+      className: "2-Takt Fun Cup",
+      crew: "3 Fahrer + Boxencrew",
+      pitSlot: "Box 12",
+      goal: "Finish + saubere Pace",
+      roadmap: [
+        { task: "Wartung & Sicherheitscheck", date: "06.08", state: "done" },
+        { task: "Testlauf + Fahrwerks-Feintuning", date: "07.08", state: "done" },
+        { task: "Transport, Pit-Setup, Abnahme", date: "14.08", state: "active" },
+        { task: "Rennwochenende & Race Day", date: "15.08", state: "" },
+      ],
+    },
+    ticker: [
+      "⚙️ Setup: Fahrwerk feinjustiert",
+      "🧰 Pit-Gear: Checkliste aktualisiert",
+      "🏁 Ziel: sauberer Lauf, keine DNFs",
+      "🔥 „Enke 666“ ready to race",
+    ],
+    contact: {
+      primaryEmail: "kontakt@bembelracingteam.de",
+      footerEmail: "info@bembelracingteam.de",
+      formMailTo: "kontakt@bembelracingteam.de",
+      locationLabel: "Unterwegs • Sachsen 2026",
+      instagram: {
+        handle: "@bembelracingteam",
+        webUrl: "https://www.instagram.com/bembelracingteam/",
+        appUrl: "instagram://user?username=bembelracingteam",
+      },
+    },
+    joinModal: {
+      badge: "Team-Update",
+      title: "Aktuell sind alle Teamplätze vergeben.",
+      bodyMain: "Danke für dein Interesse am Mitmachen. Im Moment haben wir leider keine freien Plätze im Team.",
+      bodySoft: "Wenn du uns trotzdem unterstützen möchtest, freuen wir uns sehr über Sponsoring.",
+      ctaHref: "/sponsoring-anfrage.html",
+      ctaLabel: "Sponsoring anfragen",
+    },
+    raceCenter: {},
+  };
+
+  const inputConfig = asObject(window.BEMBEL_MAINPAGE_CONFIG);
+  const inputHero = asObject(inputConfig.hero);
+  const inputRace = asObject(inputConfig.race);
+  const inputContact = asObject(inputConfig.contact);
+  const inputContactInstagram = asObject(inputContact.instagram);
+  const inputJoinModal = asObject(inputConfig.joinModal);
+
+  const siteConfig = {
+    hero: {
+      ...DEFAULT_MAINPAGE_CONFIG.hero,
+      ...inputHero,
+      stats: {
+        ...DEFAULT_MAINPAGE_CONFIG.hero.stats,
+        ...asObject(inputHero.stats),
+      },
+    },
+    race: {
+      ...DEFAULT_MAINPAGE_CONFIG.race,
+      ...inputRace,
+      roadmap: asArray(inputRace.roadmap).length ? inputRace.roadmap : DEFAULT_MAINPAGE_CONFIG.race.roadmap,
+    },
+    ticker: asArray(inputConfig.ticker).length ? inputConfig.ticker : DEFAULT_MAINPAGE_CONFIG.ticker,
+    contact: {
+      ...DEFAULT_MAINPAGE_CONFIG.contact,
+      ...inputContact,
+      instagram: {
+        ...DEFAULT_MAINPAGE_CONFIG.contact.instagram,
+        ...inputContactInstagram,
+      },
+    },
+    joinModal: {
+      ...DEFAULT_MAINPAGE_CONFIG.joinModal,
+      ...inputJoinModal,
+    },
+    raceCenter: asObject(inputConfig.raceCenter),
+  };
 
   // ---- Helpers ----
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const escapeHtml = (s) =>
+    String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
   const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+  const RACE_START_LOCAL = toText(siteConfig.race.startLocal, DEFAULT_MAINPAGE_CONFIG.race.startLocal);
+  const RACE_LOCATION = toText(siteConfig.race.location, DEFAULT_MAINPAGE_CONFIG.race.location);
+  const RACE_STATUS_UPCOMING = toText(siteConfig.race.statusUpcoming, DEFAULT_MAINPAGE_CONFIG.race.statusUpcoming);
+  const RACE_STATUS_LIVE = toText(siteConfig.race.statusLive, DEFAULT_MAINPAGE_CONFIG.race.statusLive);
+
+  const getConfigValueByPath = (path) => {
+    const keys = String(path || "").split(".").filter(Boolean);
+    if (!keys.length) return undefined;
+
+    let value = siteConfig;
+    for (const key of keys) {
+      if (!value || typeof value !== "object" || !(key in value)) return undefined;
+      value = value[key];
+    }
+    return value;
+  };
+
+  const applyConfigBindings = () => {
+    $$("[data-site-text]").forEach((el) => {
+      const path = el.getAttribute("data-site-text");
+      const value = getConfigValueByPath(path);
+      if (value === undefined || value === null) return;
+      el.textContent = String(value);
+    });
+
+    $$("[data-site-counter]").forEach((el) => {
+      const path = el.getAttribute("data-site-counter");
+      const value = Number(getConfigValueByPath(path));
+      if (!Number.isFinite(value)) return;
+      el.setAttribute("data-counter", String(value));
+    });
+
+    $$("[data-site-mailto]").forEach((el) => {
+      const path = el.getAttribute("data-site-mailto");
+      const value = String(getConfigValueByPath(path) || "").trim();
+      if (!value) return;
+
+      if (el instanceof HTMLAnchorElement) {
+        el.href = `mailto:${value}`;
+      }
+      el.textContent = value;
+    });
+
+    $$("[data-site-href]").forEach((el) => {
+      const path = el.getAttribute("data-site-href");
+      const value = String(getConfigValueByPath(path) || "").trim();
+      if (!value || !(el instanceof HTMLAnchorElement)) return;
+      el.href = value;
+    });
+  };
+
+  const renderRoadmap = () => {
+    const roadmapEl = document.querySelector("[data-race-roadmap]");
+    if (!roadmapEl) return;
+
+    const items = asArray(siteConfig.race.roadmap)
+      .map((entry) => {
+        const task = String(entry?.task || "").trim();
+        const date = String(entry?.date || "").trim();
+        const state = String(entry?.state || "").trim().toLowerCase();
+        if (!task || !date) return null;
+
+        const itemClass =
+          state === "done"
+            ? "roadmap-item is-done"
+            : state === "active"
+              ? "roadmap-item is-active"
+              : "roadmap-item";
+
+        return `
+          <li class="${itemClass}">
+            <span class="roadmap-task">${escapeHtml(task)}</span>
+            <span class="roadmap-date">${escapeHtml(date)}</span>
+          </li>
+        `;
+      })
+      .filter(Boolean);
+
+    if (!items.length) return;
+    roadmapEl.innerHTML = items.join("");
+  };
+
+  const renderTicker = () => {
+    const tickerTrack = document.querySelector("[data-ticker]");
+    if (!tickerTrack) return;
+
+    const entries = asArray(siteConfig.ticker)
+      .map((entry) => String(entry || "").trim())
+      .filter(Boolean);
+
+    if (!entries.length) return;
+    tickerTrack.innerHTML = entries.map((entry) => `<span>${escapeHtml(entry)}</span>`).join("");
+  };
 
   // ---- Instagram links (prefer app on mobile, fallback to web) ----
   const instagramLinks = $$("[data-instagram-link]");
   if (instagramLinks.length) {
-    const instaWebUrl = "https://www.instagram.com/bembelracingteam/";
-    const instaAppUrl = "instagram://user?username=bembelracingteam";
+    const instaWebUrl = toText(siteConfig.contact.instagram.webUrl, DEFAULT_MAINPAGE_CONFIG.contact.instagram.webUrl);
+    const instaAppUrl = toText(siteConfig.contact.instagram.appUrl, DEFAULT_MAINPAGE_CONFIG.contact.instagram.appUrl);
 
     instagramLinks.forEach((linkEl) => {
       if (!(linkEl instanceof HTMLAnchorElement)) return;
       linkEl.href = instaWebUrl;
       linkEl.rel = "noopener noreferrer";
 
-      if (!isMobileDevice) {
+      if (!isMobileDevice || !instaAppUrl) {
         linkEl.target = "_blank";
         return;
       }
@@ -45,6 +240,10 @@
       });
     });
   }
+
+  applyConfigBindings();
+  renderRoadmap();
+  renderTicker();
 
   // ---- Mobile nav ----
   const toggle = $(".nav-toggle");
@@ -260,7 +459,7 @@
         if (mEl) mEl.textContent = "00";
         if (sEl) sEl.textContent = "00";
         if (raceStatusOverride) setRaceStatus(raceStatusOverride);
-        else setRaceStatus("Live / läuft");
+        else setRaceStatus(RACE_STATUS_LIVE);
         return;
       }
 
@@ -276,7 +475,7 @@
       if (sEl) sEl.textContent = pad(secs);
 
       if (raceStatusOverride) setRaceStatus(raceStatusOverride);
-      else setRaceStatus("In Vorbereitung");
+      else setRaceStatus(RACE_STATUS_UPCOMING);
     };
 
     tick();
@@ -535,9 +734,6 @@
     });
   }
 
-  const escapeHtml = (s) =>
-    String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-
   // ---- Race Center ----
   const feed = document.querySelector("[data-feed]");
   const raceFeedStatusEl = document.querySelector("[data-race-feed-status]");
@@ -550,10 +746,11 @@
   const RACE_REACTIONS_KEY = "bembel_race_reactions";
 
   // Manuelle Race-Center-Daten (statische GitHub-Pages-Version ohne Backend-API).
-  // Neue Updates/Polls hier direkt ergänzen.
-  const RACE_CENTER_MANUAL = {
+  // Primäre Pflege in assets/js/mainpage-config.js unter raceCenter.
+  // Dieser Block bleibt als Fallback, falls keine Konfig geladen ist.
+  const DEFAULT_RACE_CENTER_MANUAL = {
     summary: {
-      state: "In Vorbereitung",
+      state: RACE_STATUS_UPCOMING,
       nextMilestone: "Transport, Pit-Setup und Abnahme",
       lastUpdateAt: "",
     },
@@ -595,6 +792,12 @@
       },
     ],
   };
+  const configuredRaceCenter = asObject(siteConfig.raceCenter);
+  const hasConfiguredRaceCenter =
+    Array.isArray(configuredRaceCenter.feed) ||
+    Array.isArray(configuredRaceCenter.polls) ||
+    (configuredRaceCenter.summary && typeof configuredRaceCenter.summary === "object");
+  const RACE_CENTER_MANUAL = hasConfiguredRaceCenter ? configuredRaceCenter : DEFAULT_RACE_CENTER_MANUAL;
   // Struktur-Hinweis fuer manuelle Eintraege:
   // feed item: { id, category: "technik|rennen|team", title, body, at: ISO-Datum, reactions: { fire, checkered, wrench } }
   // poll: { id, question, options: [{ id, label, votes }] }
@@ -951,7 +1154,7 @@
     renderPolls();
 
     if (!raceCenterState.feed.length) {
-      setRaceFeedStatus("Lokales Race Center bereit. Updates in assets/js/main.js unter RACE_CENTER_MANUAL pflegen.");
+      setRaceFeedStatus("Lokales Race Center bereit. Updates in assets/js/mainpage-config.js unter raceCenter pflegen.");
       return;
     }
 
@@ -1026,7 +1229,7 @@
     const initialHint = formHint?.textContent || "";
 
     const openContactMailClient = ({ name, email, topic, msg }) => {
-      const to = "kontakt@bembelracingteam.de";
+      const to = toText(siteConfig.contact.formMailTo || siteConfig.contact.primaryEmail, DEFAULT_MAINPAGE_CONFIG.contact.formMailTo);
       const subject = encodeURIComponent(
         `[Kontakt] ${topic || "Anfrage"} – ${name || "Website"}`
       );

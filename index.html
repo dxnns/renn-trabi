@@ -181,7 +181,7 @@
         <div class="hero-copy">
           <p class="badge">
             <span class="dot"></span>
-            Saison 2026 • Trabi-Rennen Sachsen
+            <span data-site-text="hero.badge">Saison 2026 • Trabi-Rennen Sachsen</span>
           </p>
 
           <h1>
@@ -189,7 +189,7 @@
             <span class="accent">„Enke 666“</span>
           </h1>
 
-          <p class="lead">
+          <p class="lead" data-site-text="hero.lead">
             Wir sind ein kleines Rennteam und gehen dieses Jahr in Sachsen an den Start.
             Hier findest du Updates, Fahrzeugdetails, Sponsoren und wie du uns supporten kannst.
           </p>
@@ -201,16 +201,16 @@
 
           <div class="stats" role="list" aria-label="Highlights">
             <div class="stat" role="listitem">
-              <span class="stat-k" data-counter="1">0</span>
-              <span class="stat-l">Renn-Trabi</span>
+              <span class="stat-k" data-counter="1" data-site-counter="hero.stats.raceCars">0</span>
+              <span class="stat-l" data-site-text="hero.stats.raceCarsLabel">Renn-Trabi</span>
             </div>
             <div class="stat" role="listitem">
-              <span class="stat-k" data-counter="3">0</span>
-              <span class="stat-l">Crew</span>
+              <span class="stat-k" data-counter="3" data-site-counter="hero.stats.crewCount">0</span>
+              <span class="stat-l" data-site-text="hero.stats.crewLabel">Crew</span>
             </div>
             <div class="stat" role="listitem">
-              <span class="stat-k" data-counter="2026">0</span>
-              <span class="stat-l">Saison</span>
+              <span class="stat-k" data-counter="2026" data-site-counter="hero.stats.season">0</span>
+              <span class="stat-l" data-site-text="hero.stats.seasonLabel">Saison</span>
             </div>
           </div>
         </div>
@@ -239,7 +239,7 @@
             </div>
             <div class="card-row">
               <span class="pill">Event</span>
-              <strong>Trabi-Rennen</strong>
+              <strong data-site-text="race.eventName">Trabi-Rennen</strong>
             </div>
 
             <div class="card-actions">
@@ -430,7 +430,7 @@
     <section id="race" class="section">
       <div class="container">
         <div class="section-head">
-          <h2>Trabi-Rennen Sachsen</h2>
+          <h2 data-site-text="race.heading">Trabi-Rennen Sachsen</h2>
           <p class="muted">
             Event-Infos, Plan und ein “News-Board”. Datum/Ort kannst du im JS einstellen.
           </p>
@@ -440,21 +440,21 @@
           <div class="race-card race-card--details reveal">
             <h3>Event Details</h3>
             <ul class="spec-list spec-list--race">
-              <li><span>Region</span><strong>Sachsen</strong></li>
+              <li><span>Region</span><strong data-site-text="race.region">Sachsen</strong></li>
               <li><span>Ort</span><strong data-racelocation>Sachsen</strong></li>
               <li><span>Termin</span><strong data-racedate>15.08.2026</strong></li>
-              <li><span>Startfenster</span><strong>10:00 Uhr • Sprintlauf</strong></li>
+              <li><span>Startfenster</span><strong data-site-text="race.startWindow">10:00 Uhr • Sprintlauf</strong></li>
               <li><span>Status</span><strong><span class="status" data-racestatus>In Vorbereitung</span></strong></li>
-              <li><span>Klasse</span><strong>2-Takt Fun Cup</strong></li>
-              <li><span>Crew</span><strong>3 Fahrer + Boxencrew</strong></li>
-              <li><span>Pit-Slot</span><strong>Box 12</strong></li>
-              <li><span>Ziel</span><strong>Finish + saubere Pace</strong></li>
+              <li><span>Klasse</span><strong data-site-text="race.className">2-Takt Fun Cup</strong></li>
+              <li><span>Crew</span><strong data-site-text="race.crew">3 Fahrer + Boxencrew</strong></li>
+              <li><span>Pit-Slot</span><strong data-site-text="race.pitSlot">Box 12</strong></li>
+              <li><span>Ziel</span><strong data-site-text="race.goal">Finish + saubere Pace</strong></li>
               <li><span></span><strong></strong></li>
               <!-- <li><span>Kontakt</span><strong><a class="link" href="#contact">Schreib uns</a></strong></li> -->
             </ul>
             <div class="race-roadmap" aria-label="Roadmap bis zum Rennen">
               <div class="race-roadmap-title">Roadmap</div>
-              <ol class="roadmap-list">
+              <ol class="roadmap-list" data-race-roadmap>
                 <li class="roadmap-item is-done">
                   <span class="roadmap-task">Wartung & Sicherheitscheck</span>
                   <span class="roadmap-date">06.08</span>
@@ -633,7 +633,7 @@
           <div class="contact-cards">
             <div class="contact-card">
               <strong>E-Mail</strong>
-              <div class="muted"><a class="link" href="mailto:kontakt@bembelracingteam.de">kontakt@bembelracingteam.de</a></div>
+              <div class="muted"><a class="link" href="mailto:kontakt@bembelracingteam.de" data-site-mailto="contact.primaryEmail">kontakt@bembelracingteam.de</a></div>
             </div>
             <div class="contact-card">
               <strong>Instagram</strong>
@@ -642,12 +642,13 @@
                   class="link"
                   href="https://www.instagram.com/bembelracingteam/"
                   data-instagram-link
+                  data-site-text="contact.instagram.handle"
                 >@bembelracingteam</a>
               </div>
             </div>
             <div class="contact-card">
               <strong>Ort</strong>
-              <div class="muted">Unterwegs • Sachsen 2026</div>
+              <div class="muted" data-site-text="contact.locationLabel">Unterwegs • Sachsen 2026</div>
             </div>
           </div>
         </div>
@@ -689,7 +690,7 @@
       <div>
         <strong>Bembel Racing Team</strong>
         <div class="muted small">© <span data-year></span> • Renn-Trabi „Enke 666“</div>
-        <div class="muted small"><a class="link" href="mailto:info@bembelracingteam.de">info@bembelracingteam.de</a></div>
+        <div class="muted small"><a class="link" href="mailto:info@bembelracingteam.de" data-site-mailto="contact.footerEmail">info@bembelracingteam.de</a></div>
       </div>
 
       <div class="footer-links">
@@ -703,21 +704,22 @@
   <div class="join-modal" data-joinmodal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="joinModalTitle" aria-describedby="joinModalText">
     <div class="join-modal-card" role="document">
       <button class="join-modal-close" type="button" data-joinmodal-close aria-label="Hinweis schließen">✕</button>
-      <p class="join-modal-badge">Team-Update</p>
-      <h2 class="join-modal-title" id="joinModalTitle">Aktuell sind alle Teamplätze vergeben.</h2>
-      <p class="join-modal-text" id="joinModalText">
+      <p class="join-modal-badge" data-site-text="joinModal.badge">Team-Update</p>
+      <h2 class="join-modal-title" id="joinModalTitle" data-site-text="joinModal.title">Aktuell sind alle Teamplätze vergeben.</h2>
+      <p class="join-modal-text" id="joinModalText" data-site-text="joinModal.bodyMain">
         Danke für dein Interesse am Mitmachen. Im Moment haben wir leider keine freien Plätze im Team.
       </p>
-      <p class="join-modal-text join-modal-text-soft">
+      <p class="join-modal-text join-modal-text-soft" data-site-text="joinModal.bodySoft">
         Wenn du uns trotzdem unterstützen möchtest, freuen wir uns sehr über Sponsoring.
       </p>
       <div class="join-modal-actions">
-        <a class="btn btn-small" href="/sponsoring-anfrage.html">Sponsoring anfragen</a>
+        <a class="btn btn-small" href="/sponsoring-anfrage.html" data-site-href="joinModal.ctaHref" data-site-text="joinModal.ctaLabel">Sponsoring anfragen</a>
         <button class="btn btn-small btn-ghost" type="button" data-joinmodal-close>Schließen</button>
       </div>
     </div>
   </div>
 
+  <script src="assets/js/mainpage-config.js" defer></script>
   <script src="assets/js/main.js" defer></script>
 </body>
 </html>
