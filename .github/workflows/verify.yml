@@ -100,8 +100,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install actionlint
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="1.7.4"
+          ARCHIVE="actionlint_${VERSION}_linux_amd64.tar.gz"
+          URL="https://github.com/rhysd/actionlint/releases/download/v${VERSION}/${ARCHIVE}"
+          curl -sSL "$URL" -o "$ARCHIVE"
+          tar -xzf "$ARCHIVE" actionlint
+          chmod +x actionlint
+
       - name: Validate workflow definitions
-        uses: rhysd/actionlint@v1
+        shell: bash
+        run: ./actionlint -color
 
   dependency-review:
     name: Dependency Review (PR)
