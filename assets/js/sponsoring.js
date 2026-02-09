@@ -6,39 +6,6 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const apiBaseMeta = $('meta[name="api-base"]')?.getAttribute("content")?.trim() || "";
-  const apiBaseByHost =
-    window.location.hostname === "www.bembelracingteam.de" || window.location.hostname === "bembelracingteam.de"
-      ? "https://api.bembelracingteam.de"
-      : "";
-  const apiBase = apiBaseMeta || apiBaseByHost;
-  const mailFallbackEnabled =
-    (($('meta[name="mail-fallback-enabled"]')?.getAttribute("content") || "").trim().toLowerCase() === "true");
-
-  const toApiUrl = (path) => {
-    if (!apiBase) return path;
-    try {
-      return new URL(path, `${apiBase.replace(/\/+$/, "")}/`).toString();
-    } catch {
-      return path;
-    }
-  };
-
-  const getApiFailureHint = (err) => {
-    if (window.location.protocol === "file:") {
-      return "Die Seite wird als lokale Datei geöffnet. API-Routen funktionieren nur über den Node-Server.";
-    }
-    if (!navigator.onLine) {
-      return "Es besteht aktuell keine Netzwerkverbindung.";
-    }
-    if (Number.isFinite(err?.status)) {
-      return `Backend antwortet mit HTTP ${err.status}.`;
-    }
-    if (apiBase) {
-      return `Backend nicht erreichbar unter ${apiBase}.`;
-    }
-    return "Backend nicht erreichbar. Starte den Server mit `npm run dev` und öffne die Seite über `http://127.0.0.1:8080/`.";
-  };
 
   // ---- Section build on scroll ----
   const sections = $$("main > section");
@@ -346,9 +313,7 @@
     const formHint = sponsorForm.querySelector(".form-actions .muted.small");
     const submitBtn = sponsorForm.querySelector("button[type='submit']");
     const initialHint = formHint?.textContent || "";
-    const formStartedAt = Date.now();
-
-    const openMailFallback = ({ name, company, email, phone, startWindow, interests, message }) => {
+    const openMailClient = ({ name, company, email, phone, startWindow, interests, message }) => {
       const to = "sponsoring@bembelracingteam.de";
       const subject = encodeURIComponent(
         `[Sponsoring] ${company || "Anfrage"} – ${state.selectedPlan} (${formatEUR(state.amount)} EUR)`
@@ -374,7 +339,7 @@
       window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
     };
 
-    sponsorForm.addEventListener("submit", async (e) => {
+    sponsorForm.addEventListener("submit", (e) => {
       e.preventDefault();
 
       const name = $("#sponsorName")?.value?.trim() || "";
@@ -392,68 +357,19 @@
         formHint.textContent = "Senden ...";
       }
 
-      try {
-        const response = await fetch(toApiUrl("/api/leads/sponsor"), {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "same-origin",
-          body: JSON.stringify({
-            name,
-            company,
-            email,
-            phone,
-            selectedPlan: state.selectedPlan,
-            selectedAmount: state.amount,
-            startWindow,
-            interests,
-            message,
-            website: "",
-            pagePath: window.location.pathname,
-            formStartedAt,
-          }),
-        });
-
-        if (!response.ok) {
-          const err = new Error(`HTTP ${response.status}`);
-          err.status = response.status;
-          throw err;
-        }
-
-        sponsorForm.reset();
-        if (amountRange) amountRange.value = String(state.amount);
-        setSelectedPlan(state.selectedPlan);
-        updateBudgetUI();
-        if (formHint) {
-          formHint.textContent = "Danke! Anfrage erfolgreich übermittelt.";
-        }
-      } catch (err) {
-        if (err?.status === 429) {
-          if (formHint) {
-            formHint.textContent = "Zu viele Anfragen in kurzer Zeit. Bitte kurz warten.";
+      openMailClient({ name, company, email, phone, startWindow, interests, message });
+      if (formHint) {
+        formHint.textContent = "E-Mail-Client geöffnet. Bitte Anfrage dort absenden.";
+      }
+      if (submitBtn instanceof HTMLButtonElement) {
+        submitBtn.disabled = false;
+      }
+      if (formHint && initialHint) {
+        window.setTimeout(() => {
+          if (formHint.textContent !== initialHint) {
+            formHint.textContent = initialHint;
           }
-          return;
-        }
-
-        if (mailFallbackEnabled) {
-          openMailFallback({ name, company, email, phone, startWindow, interests, message });
-        }
-        if (formHint) {
-          const hint = getApiFailureHint(err);
-          formHint.textContent = mailFallbackEnabled
-            ? "API aktuell nicht erreichbar. E-Mail-Client wird geöffnet."
-            : `Senden derzeit nicht möglich. ${hint}`;
-        }
-      } finally {
-        if (submitBtn instanceof HTMLButtonElement) {
-          submitBtn.disabled = false;
-        }
-        if (formHint && initialHint) {
-          window.setTimeout(() => {
-            if (formHint.textContent !== initialHint) {
-              formHint.textContent = initialHint;
-            }
-          }, 7000);
-        }
+        }, 7000);
       }
     });
   }
